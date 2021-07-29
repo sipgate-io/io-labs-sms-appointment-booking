@@ -7,7 +7,8 @@
   "scripts": {
     "start": "node src/index.js",
     "format": "prettier --write **/**.js",
-    "lint": "eslint --fix ./src/**/*.js"
+    "lint": "eslint --fix ./src/**/*.js",
+    "test": "jest src/*.test.js"
   },
   "repository": {
     "type": "git",
@@ -24,7 +25,9 @@
     "sipgateio": "^2.5.2"
   },
   "devDependencies": {
+    "@babel/plugin-transform-modules-commonjs": "^7.14.5",
     "eslint": "^7.31.0",
+    "jest": "^27.0.6",
     "prettier": "^2.3.2"
   }
 }
