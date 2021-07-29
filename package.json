@@ -5,7 +5,9 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "start": "node src/index.js"
+    "start": "node src/index.js",
+    "format": "prettier --write **/**.js",
+    "lint": "eslint --fix ./src/**/*.js"
   },
   "repository": {
     "type": "git",
@@ -20,5 +22,9 @@
   "dependencies": {
     "dotenv": "^10.0.0",
     "sipgateio": "^2.5.2"
+  },
+  "devDependencies": {
+    "eslint": "^7.31.0",
+    "prettier": "^2.3.2"
   }
 }

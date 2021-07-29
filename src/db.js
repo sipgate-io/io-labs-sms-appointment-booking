@@ -7,7 +7,7 @@ export function readDB() {
 }
 
 export function writeDB(subject, date) {
-  const data = serialize(subject, date);
+  const data = serialize(subject, date.toISOString());
   writeFileSync("db.json", data, { flags: "w+" });
 }
 
@@ -19,13 +19,12 @@ function serialize(subject, date) {
   let json = null;
   if (existsSync("db.json")) {
     const currentData = readDB();
-    Object.keys(currentData).forEach((_) => {
-      if (!currentData.hasOwnProperty(date)) {
-        currentData[date] = data;
-      } else {
-        throw Error("Sorry, an appointment at this time is already taken");
-      }
-    });
+
+    if (currentData[date] !== undefined) {
+      throw Error("Sorry, an appointment at this time is already taken");
+    }
+
+    currentData[date] = data;
     json = JSON.stringify(currentData);
   } else {
     json = JSON.stringify({ [date]: data });

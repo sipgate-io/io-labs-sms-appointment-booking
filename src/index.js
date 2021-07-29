@@ -1,9 +1,9 @@
-import { createHistoryModule, sipgateIO } from "sipgateio";
+// import { createHistoryModule, sipgateIO } from "sipgateio";
 import * as dotenv from "dotenv";
 import { writeDB } from "./db.js";
 dotenv.config();
 
-const TEST_STRING = "Termin: 30.02, 11:00, Treffen im Park";
+const TEST_STRING = "Termin: 28.02, 10:00, Treffen im Park";
 
 async function run() {
   /*
@@ -43,7 +43,7 @@ function parse(smsBody) {
     throw Error("Sorry, invalid day in month.");
   }
 
-  if (date.getMonth() !== month) {
+  if (date.getMonth() + 1 !== month) {
     throw Error("Sorry, invalid month.");
   }
 
