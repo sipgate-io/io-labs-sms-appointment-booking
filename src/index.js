@@ -3,7 +3,7 @@ import * as dotenv from "dotenv";
 import { writeDB } from "./db.js";
 dotenv.config();
 
-const TEST_STRING = "Termin: 28.02, 10:00, Treffen im Park";
+const TEST_STRING = "Termin: 28.02, 13:00, Treffen im Park";
 
 async function run() {
   /*
@@ -13,24 +13,33 @@ async function run() {
     const historyModule = createHistoryModule(client);
     const historyEntries = await historyModule.fetchAll();
     console.log(historyEntries.filter(entry => entry.type === 'SMS'));
-    */
+  */
+
+  let startDate = null;
+  let endDate = null;
+  try {
+    startDate = parseTime(process.env.START_TIME);
+    endDate = parseTime(process.env.END_TIME);
+  } catch (e) {
+    console.warn(e.message);
+  }
 
   try {
-    const { subject, date } = parse(TEST_STRING);
+    const { subject, date } = parse(TEST_STRING, startDate, endDate);
     writeDB(subject, date);
   } catch (e) {
     console.warn(e.message);
   }
 }
 
-function parse(smsBody) {
-  const s = smsBody.slice(8, smsBody.length);
-  let tokens = s.split(",");
-  tokens = tokens.map((token) => token.trim());
-  const day = parseInt(tokens[0].split(".")[0]);
-  const month = parseInt(tokens[0].split(".")[1]);
-  const hour = parseInt(tokens[1].split(":")[0]);
-  const minute = parseInt(tokens[1].split(":")[1]);
+function parse(smsBody, startDate, endDate) {
+  let tokens = smsBody
+    .split(/Termin:|,/)
+    .filter((token) => token !== "")
+    .map((token) => token.trim());
+  const { day, month } = parseDate(tokens[0]);
+  const { hour, minute } = parseTime(tokens[1]);
+  const subject = tokens[2];
   const date = new Date(2021, month - 1, day, hour, minute);
 
   if (!isValidDate(date)) {
@@ -51,13 +60,46 @@ function parse(smsBody) {
     throw Error("You can only book an appointment every hour.");
   }
 
-  if (hour > 15 || hour < 8) {
+  if (hour > endDate.hour || hour < startDate.hour) {
     throw Error(
-      "You can only book an appointment between 8:00 AM and 3:00 PM."
+      `You can only book an appointment between ${String(
+        startDate.hour
+      ).padStart(2, "0")}:${String(startDate.minute).padStart(
+        2,
+        "0"
+      )} and ${String(endDate.hour).padStart(2, "0")}:${String(
+        endDate.minute
+      ).padStart(2, "0")}`
     );
   }
 
-  return { subject: tokens[2], date: date };
+  return { subject, date };
+}
+
+function parseTime(timeString) {
+  const hour = parseInt(timeString.split(":")[0]);
+  const minute = parseInt(timeString.split(":")[1]);
+
+  if (hour > 23 || hour < 0) {
+    throw Error(
+      "Sorry, your hours are out of bound, hours have to be between 0 and 23"
+    );
+  }
+
+  if (minute > 59 || minute < 0) {
+    throw Error(
+      "Sorry, your minutes are out of bound, minutes have to be between 0 and 59"
+    );
+  }
+
+  return { hour, minute };
+}
+
+function parseDate(dateString) {
+  const day = parseInt(dateString.split(".")[0]);
+  const month = parseInt(dateString.split(".")[1]);
+
+  return { month, day };
 }
 
 function isValidDate(date) {
