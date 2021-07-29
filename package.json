@@ -1,0 +1,24 @@
+{
+  "name": "io-labs-sms-appointment-booking",
+  "version": "0.0.1",
+  "description": "A simple Node.js application for booking appointments via SMS",
+  "main": "index.js",
+  "type": "module",
+  "scripts": {
+    "start": "node src/index.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/sipgate-io/io-labs-sms-appointment-booking.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/sipgate-io/io-labs-sms-appointment-booking/issues"
+  },
+  "homepage": "https://github.com/sipgate-io/io-labs-sms-appointment-booking#readme",
+  "dependencies": {
+    "dotenv": "^10.0.0",
+    "sipgateio": "^2.5.2"
+  }
+}
