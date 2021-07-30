@@ -1,6 +1,7 @@
 import { parse } from "./parse.js";
 import { writeDB } from "./db.js";
 import { SmsParseError, AppointmentTakenError } from "./errors.js";
+import {sendSms} from "./sendSms.js";
 
 export function handleAllSms(response, startDate, endDate) {
   response.forEach((sms) => {
@@ -12,12 +13,14 @@ export function handleSms(sms, startDate, endDate) {
   try {
     const { subject, date } = parse(sms.smsContent, startDate, endDate);
     writeDB(subject, date);
+    sendSms(`Dein Termin am ${date.toLocaleDateString("de-DE")} um ${date.toLocaleTimeString("de-DE")} wurde erfolgreich gebucht.`);
   } catch (e) {
-    switch (e) {
-      case e instanceof SmsParseError:
+    switch (e.constructor) {
+      case SmsParseError:
         console.warn(e.message);
+        sendSms(e.message);
         break;
-      case e instanceof AppointmentTakenError:
+      case AppointmentTakenError:
         console.warn(e.message);
         sendSms(e.message);
         break;
@@ -27,9 +30,4 @@ export function handleSms(sms, startDate, endDate) {
         break;
     }
   }
-  sendSms("Your appointment is made")
-}
-
-export function sendSms(message) {
-  // to be implemented
 }
