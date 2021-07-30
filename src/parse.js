@@ -1,3 +1,5 @@
+import { SmsParseError, AppointmentTakenError } from "./errors.js";
+
 export function parse(smsBody, startDate, endDate) {
   let tokens = smsBody
     .split(/Termin:|,/)
@@ -6,28 +8,29 @@ export function parse(smsBody, startDate, endDate) {
   const { day, month } = parseDate(tokens[0]);
   const { hour, minute } = parseTime(tokens[1]);
   const subject = tokens[2];
-  const date = new Date(2021, month - 1, day, hour, minute);
+  // TODO: handle case if appointment is in a new year (e.g. January 2022, instead of January 2021)
+  const date = new Date(new Date().getFullYear(), month - 1, day, hour, minute);
 
   if (!isValidDate(date)) {
-    throw Error(
+    throw new SmsParseError(
       "The input for the date could not be parsed, please check your input."
     );
   }
 
   if (date.getDate() !== day) {
-    throw Error("Sorry, invalid day in month.");
+    throw new SmsParseError("Sorry, invalid day in month.");
   }
 
   if (date.getMonth() + 1 !== month) {
-    throw Error("Sorry, invalid month.");
+    throw new SmsParseError("Sorry, invalid month.");
   }
 
   if (minute !== 0) {
-    throw Error("You can only book an appointment every hour.");
+    throw new SmsParseError("You can only book an appointment every hour.");
   }
 
   if (hour > endDate.hour || hour < startDate.hour) {
-    throw Error(
+    throw new SmsParseError(
       `You can only book an appointment between ${String(
         startDate.hour
       ).padStart(2, "0")}:${String(startDate.minute).padStart(
@@ -47,13 +50,13 @@ export function parseTime(timeString) {
   const minute = parseInt(timeString.split(":")[1]);
 
   if (hour > 23 || hour < 0) {
-    throw Error(
+    throw new AppointmentTakenError(
       "Sorry, your hours are out of bound, hours have to be between 0 and 23"
     );
   }
 
   if (minute > 59 || minute < 0) {
-    throw Error(
+    throw new AppointmentTakenError(
       "Sorry, your minutes are out of bound, minutes have to be between 0 and 59"
     );
   }

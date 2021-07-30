@@ -1,20 +1,17 @@
-// import { createHistoryModule, sipgateIO } from "sipgateio";
+import { createHistoryModule, sipgateIO } from "sipgateio";
 import * as dotenv from "dotenv";
 import { writeDB } from "./db.js";
 import { parseTime, parse } from "./parse.js";
-dotenv.config();
-
-const TEST_STRING = "Termin: 28.02, 13:00, Treffen im Park";
+import mockResponse from "./mockSms.js";
 
 async function run() {
-  /*
-    const tokenId = process.env.TOKEN_ID;
-    const token = process.env.TOKEN;
-    const client = sipgateIO({ tokenId, token });
-    const historyModule = createHistoryModule(client);
-    const historyEntries = await historyModule.fetchAll();
-    console.log(historyEntries.filter(entry => entry.type === 'SMS'));
-  */
+  dotenv.config();
+  // const tokenId = process.env.TOKEN_ID;
+  // const token = process.env.TOKEN;
+  // const client = sipgateIO({ tokenId, token });
+  // const historyModule = createHistoryModule(client);
+  // const historyEntries = await historyModule.fetchAll();
+  // console.log(historyEntries.filter((entry) => entry.type === "SMS"));
 
   let startDate = null;
   let endDate = null;
@@ -26,7 +23,11 @@ async function run() {
   }
 
   try {
-    const { subject, date } = parse(TEST_STRING, startDate, endDate);
+    const { subject, date } = parse(
+      mockResponse[0].smsContent,
+      startDate,
+      endDate
+    );
     writeDB(subject, date);
   } catch (e) {
     console.warn(e.message);
