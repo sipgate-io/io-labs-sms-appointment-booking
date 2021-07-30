@@ -1,4 +1,4 @@
-import { createHistoryModule, sipgateIO } from "sipgateio";
+//import { createHistoryModule, sipgateIO } from "sipgateio";
 import * as dotenv from "dotenv";
 import { writeDB } from "./db.js";
 import { parseTime, parse } from "./parse.js";

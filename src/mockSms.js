@@ -1,4 +1,4 @@
-const mockReponse = [
+const mockResponse = [
   {
     id: "5005443120",
     source: "anonymous",
@@ -67,4 +67,4 @@ const mockReponse = [
   },
 ];
 
-export default mockReponse;
+export default mockResponse;

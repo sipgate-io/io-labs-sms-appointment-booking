@@ -8,9 +8,9 @@ export function handleAllSms(response, startDate, endDate) {
   });
 }
 
-export function handleSms(sms) {
-  const { subject, date } = parse(sms.smsContent, startDate, endDate);
+export function handleSms(sms, startDate, endDate) {
   try {
+    const { subject, date } = parse(sms.smsContent, startDate, endDate);
     writeDB(subject, date);
   } catch (e) {
     switch (e) {
@@ -27,6 +27,7 @@ export function handleSms(sms) {
         break;
     }
   }
+  sendSms("Your appointment is made")
 }
 
 export function sendSms(message) {
