@@ -1,6 +1,6 @@
 import { expect, test, describe } from "@jest/globals";
-import { parse, parseTime } from "./parse.js";
-import { SmsParseError, AppointmentTakenError } from "./errors.js";
+import { parse, parseTime } from "../src/parse.js";
+import { SmsParseError, AppointmentTakenError } from "../src/errors.js";
 
 describe("Parse function", () => {
   const startDate = { hour: 8, minute: 0 };

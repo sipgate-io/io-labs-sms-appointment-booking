@@ -2,7 +2,7 @@
 import * as dotenv from "dotenv";
 import { writeDB } from "./db.js";
 import { parseTime, parse } from "./parse.js";
-import mockResponse from "./mockSms.js";
+import mockResponse from "../test/mockSms.js";
 
 async function run() {
   dotenv.config();

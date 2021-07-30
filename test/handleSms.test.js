@@ -1,8 +1,8 @@
-import { SmsParseError, AppointmentTakenError } from "./errors.js";
-import { handleSms } from "./handleSms";
-import * as sendSmsModule from "./sendSms";
-import * as dbModule from "./db";
-import * as parseModule from "./parse";
+import { SmsParseError, AppointmentTakenError } from "../src/errors.js";
+import { handleSms } from "../src/handleSms";
+import * as sendSmsModule from "../src/sendSms";
+import * as dbModule from "../src/db";
+import * as parseModule from "../src/parse";
 import mockResponse from "./mockSms.js"
 
 describe("handleAllSms", () => {});
