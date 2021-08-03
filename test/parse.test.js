@@ -10,7 +10,7 @@ describe("Parse function", () => {
     const TEST_STRING = "Termin: 25.02, 18:AA";
     expect(() => parse(TEST_STRING, startDate, endDate)).toThrow(
       new SmsParseError(
-        "The input for the date could not be parsed, please check your input."
+        "Das Datum konnte nicht analysiert werden, bitte überprüfe deinen Input."
       )
     );
   });
@@ -18,21 +18,21 @@ describe("Parse function", () => {
   test("should throw an error when the day in the month is invalid", () => {
     const TEST_STRING = "Termin: 32.02, 15:00, Coding";
     expect(() => parse(TEST_STRING, startDate, endDate)).toThrow(
-      new SmsParseError("Sorry, invalid day in month.")
+      new SmsParseError("Sorry, den Tag gibt es in dem Monat nicht.")
     );
   });
 
   test("should throw an error when the month is invalid", () => {
     const TEST_STRING = "Termin: 01.14, 18:00, Coding";
     expect(() => parse(TEST_STRING, startDate, endDate)).toThrow(
-      new SmsParseError("Sorry, invalid month.")
+      new SmsParseError("Sorry, den Monat gibt es nicht.")
     );
   });
 
   test("should throw an error when the appointment is not at a full hour", () => {
     const TEST_STRING = "Termin: 25.02, 12:15, Coding";
     expect(() => parse(TEST_STRING, startDate, endDate)).toThrow(
-      new SmsParseError("You can only book an appointment every hour.")
+      new SmsParseError("Du kannst nur Termine zur vollen Stunde buchen.")
     );
   });
 
@@ -40,14 +40,14 @@ describe("Parse function", () => {
     const TEST_STRING = "Termin: 25.02, 18:00, Coding";
     expect(() => parse(TEST_STRING, startDate, endDate)).toThrow(
       new SmsParseError(
-        `You can only book an appointment between ${String(
+        `Du kannst nur zwischen ${String(
           startDate.hour
         ).padStart(2, "0")}:${String(startDate.minute).padStart(
           2,
           "0"
-        )} and ${String(endDate.hour).padStart(2, "0")}:${String(
+        )} und ${String(endDate.hour).padStart(2, "0")}:${String(
           endDate.minute
-        ).padStart(2, "0")}`
+        ).padStart(2, "0")} einen Termin buchen.`
       )
     );
   });
@@ -78,7 +78,7 @@ describe("ParseTime function", () => {
       parseTime(time);
     }).toThrow(
       new AppointmentTakenError(
-        "Sorry, your hours are out of bound, hours have to be between 0 and 23"
+        "Sorry, die Stunden sind außerhalb des gültigen Bereichs, die Stundenanzahl muss zwischen 0 und 23 Stunden liegen."
       )
     );
   });
@@ -89,7 +89,7 @@ describe("ParseTime function", () => {
       parseTime(time);
     }).toThrow(
       new AppointmentTakenError(
-        "Sorry, your minutes are out of bound, minutes have to be between 0 and 59"
+        "Sorry, die Minuten sind außerhalb des gültigen Bereichs, der gültige Bereich der Minuten liegt zwischen 0 und 59."
       )
     );
   });

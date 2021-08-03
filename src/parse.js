@@ -13,7 +13,7 @@ export function parse(smsBody, startDate, endDate) {
 
   if (!isValidDate(date)) {
     throw new SmsParseError(
-      "Das Datum konnte nicht geparsed werden, bitte überprüfe deinen Input"
+      "Das Datum konnte nicht analysiert werden, bitte überprüfe deinen Input."
     );
   }
 
@@ -38,7 +38,7 @@ export function parse(smsBody, startDate, endDate) {
         "0"
       )} und ${String(endDate.hour).padStart(2, "0")}:${String(
         endDate.minute
-      ).padStart(2, "0")} einen Termin buchen`
+      ).padStart(2, "0")} einen Termin buchen.`
     );
   }
 
@@ -51,7 +51,7 @@ export function parseTime(timeString) {
 
   if (hour > 23 || hour < 0) {
     throw new AppointmentTakenError(
-      "Sorry, die Stunden sind außerhalb des gültigen Bereichs, die Stundenanzahl muss zwischen 0 und 23 Stunden liegen"
+      "Sorry, die Stunden sind außerhalb des gültigen Bereichs, die Stundenanzahl muss zwischen 0 und 23 Stunden liegen."
     );
   }
 

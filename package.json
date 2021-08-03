@@ -8,7 +8,7 @@
     "start": "node src/index.js",
     "format": "prettier --write **/**.js",
     "lint": "eslint --fix ./src/**/*.js",
-    "test": "jest src/*.test.js"
+    "test": "jest test/*.test.js"
   },
   "repository": {
     "type": "git",
