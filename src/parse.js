@@ -5,12 +5,22 @@ export function parse(smsBody, startDate, endDate) {
     .split(/Termin:|,/)
     .filter((token) => token !== "")
     .map((token) => token.trim());
-  const { day, month } = parseDate(tokens[0]);
+  
+  if(tokens.length != 3){
+    throw new SmsParseError(
+      "Die Eingabe war fehlerhaft, bitte überprüfe deinen Input."
+    );
+  }
+
+  const { day, month, year } = parseDate(tokens[0]);
   const { hour, minute } = parseTime(tokens[1]);
   const subject = tokens[2];
-  // TODO: handle case if appointment is in a new year (e.g. January 2022, instead of January 2021)
-  const date = new Date(new Date().getFullYear(), month - 1, day, hour, minute);
-
+  const date = new Date(year, month - 1, day, hour, minute);
+  const now = new Date();
+  if(now > date){
+    date.setFullYear(year + 1);
+  }
+  
   if (!isValidDate(date)) {
     throw new SmsParseError(
       "Das Datum konnte nicht analysiert werden, bitte überprüfe deinen Input."
@@ -67,8 +77,9 @@ export function parseTime(timeString) {
 function parseDate(dateString) {
   const day = parseInt(dateString.split(".")[0]);
   const month = parseInt(dateString.split(".")[1]);
+  const year = dateString.split(".").length == 3 ? parseInt(dateString.split(".")[2]) : new Date().getFullYear();
 
-  return { month, day };
+  return { month, day, year };
 }
 
 function isValidDate(date) {

@@ -16,11 +16,12 @@ describe("handleSms", () => {
   const startDate = {hour: 9, minute: 0};
   const endDate = {hour: 16, minute: 0} ;
 
+  const client = {};
+
   test("should write to the DB and send an comfirmation SMS if it is successful", () => {
     const parse = jest.spyOn(parseModule, "parse").mockReturnValue(mockAppointment);
     const writeDB = jest.spyOn(dbModule, "writeDB").mockImplementation(() => {});
     const sendSms = jest.spyOn(sendSmsModule, "sendSms").mockImplementation(() => {});
-    const client = {};
 
     handleSms(sms, startDate, endDate, client);
     expect(parse).toBeCalledTimes(1);
@@ -28,7 +29,7 @@ describe("handleSms", () => {
     expect(writeDB).toBeCalledTimes(1);
     expect(writeDB).toBeCalledWith(mockAppointment.subject, mockAppointment.date);
     expect(sendSms).toBeCalledTimes(1);
-    expect(sendSms).toBeCalledWith(`Dein Termin am ${mockAppointment.date.toLocaleDateString("de-DE")} um ${mockAppointment.date.toLocaleTimeString("de-DE")} wurde erfolgreich gebucht.`, client)
+    expect(sendSms).toBeCalledWith(`Dein Termin am ${mockAppointment.date.toLocaleDateString("de-DE")} um ${mockAppointment.date.toLocaleTimeString("de-DE")} wurde erfolgreich gebucht.`, client, sms.source);
   });
 
   test("should try to parse the SMS and send an error message per SMS if the parsing fails", () => {
@@ -37,13 +38,12 @@ describe("handleSms", () => {
     })
     const writeDB = jest.spyOn(dbModule, "writeDB").mockImplementation(() => {});
     const sendSms = jest.spyOn(sendSmsModule, "sendSms").mockImplementation(() => {});
-    const client = {};
 
     handleSms(sms, startDate, endDate, client);
     expect(parse).toBeCalledWith(sms.smsContent, startDate, endDate);
     expect(writeDB).toBeCalledTimes(0);
     expect(sendSms).toBeCalledTimes(1);
-    expect(sendSms).toBeCalledWith("Parse Error!", client);
+    expect(sendSms).toBeCalledWith("Parse Error!", client, sms.source);
   })
 
   test("should try writing to the DB and send an error message per SMS if an appointment is not available", () => {
@@ -52,7 +52,6 @@ describe("handleSms", () => {
       throw new AppointmentTakenError("Appointment taken");
     });
     const sendSms = jest.spyOn(sendSmsModule, "sendSms").mockImplementation(() => {});
-    const client = {};
 
     handleSms(sms, startDate, endDate, client);
     expect(parse).toBeCalledTimes(1);
@@ -61,7 +60,7 @@ describe("handleSms", () => {
     expect(writeDB).toBeCalledWith(mockAppointment.subject, mockAppointment.date);
     expect(writeDB).toThrow(new AppointmentTakenError("Appointment taken"));
     expect(sendSms).toBeCalledTimes(1);
-    expect(sendSms).toBeCalledWith("Appointment taken", client);
+    expect(sendSms).toBeCalledWith("Appointment taken", client, sms.source);
   })
 
   afterEach(() => {

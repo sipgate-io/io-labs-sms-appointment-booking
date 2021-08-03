@@ -1,4 +1,5 @@
 import { writeFileSync, readFileSync, existsSync } from "fs";
+import { AppointmentTakenError } from "./errors.js";
 
 export function readDB() {
   const buffer = readFileSync("db.json");
@@ -21,7 +22,7 @@ function serialize(subject, date) {
     const currentData = readDB();
 
     if (currentData[date] !== undefined) {
-      throw Error("Sorry, an appointment at this time is already taken");
+      throw new AppointmentTakenError("Sorry, zu diesem Zeitpunkt gibt es keinen freien Termin.");
     }
 
     currentData[date] = data;
