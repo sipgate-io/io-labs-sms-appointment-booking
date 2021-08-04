@@ -1,6 +1,6 @@
 import { SmsParseError, AppointmentTakenError, PhoneNumberError } from "./errors.js";
 
-export function parse(sms, startDate, endDate) {
+export function parse(sms, startDate, endDate, currentDate) {
 
   if (!isValidE164PhoneNumber(sms.source)) {
     throw new PhoneNumberError(
@@ -19,15 +19,12 @@ export function parse(sms, startDate, endDate) {
     );
   }
 
-  const { day, month, year } = parseDate(tokens[0]);
+  const { day, month, year } = parseDate(tokens[0], currentDate);
   const { hour, minute } = parseTime(tokens[1]);
   const subject = tokens[2];
   const date = new Date(year, month - 1, day, hour, minute);
-  const now = new Date();
-  if(now > date){
-    date.setFullYear(year + 1);
-  }
-  
+
+  checkYear(date, currentDate);
   if (!isValidDate(date)) {
     throw new SmsParseError(
       "Das Datum konnte nicht analysiert werden, bitte überprüfe deinen Input."
@@ -81,10 +78,10 @@ export function parseTime(timeString) {
   return { hour, minute };
 }
 
-function parseDate(dateString) {
+export function parseDate(dateString, currentDate) {
   const day = parseInt(dateString.split(".")[0]);
   const month = parseInt(dateString.split(".")[1]);
-  const year = dateString.split(".").length == 3 ? parseInt(dateString.split(".")[2]) : new Date().getFullYear();
+  const year = dateString.split(".").length == 3 ? parseInt(dateString.split(".")[2]) : currentDate.getFullYear();
 
   return { month, day, year };
 }
@@ -97,3 +94,10 @@ function isValidE164PhoneNumber(phoneNumber) {
   const regEx = /^\+[1-9]\d{10,14}$/;
   return regEx.test(phoneNumber);
 }
+
+function checkYear(date, currentDate){
+  if(currentDate > date){
+    date.setFullYear(currentDate.getFullYear() + 1);
+  }
+}
+

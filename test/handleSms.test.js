@@ -8,9 +8,13 @@ import mockResponse from "./mockSms.js"
 describe("handleAllSms", () => {});
 
 describe("handleSms", () => {
+  beforeEach(() => {
+    jest.spyOn(console, 'warn').mockImplementation(() => {});
+  });
+  const currentDate = new Date(2021, 5, 5, 5, 0);
   const mockAppointment = {
     subject: "asfd",
-    date: new Date(),
+    date: currentDate
   };
   const sms = mockResponse[0];
   const startDate = {hour: 9, minute: 0};
@@ -23,9 +27,9 @@ describe("handleSms", () => {
     const writeDB = jest.spyOn(dbModule, "writeDB").mockImplementation(() => {});
     const sendSms = jest.spyOn(sendSmsModule, "sendSms").mockImplementation(() => {});
 
-    handleSms(sms, startDate, endDate, client);
+    handleSms(sms, startDate, endDate, client, currentDate);
     expect(parse).toBeCalledTimes(1);
-    expect(parse).toBeCalledWith(sms.smsContent, startDate, endDate);
+    expect(parse).toBeCalledWith(sms, startDate, endDate, currentDate);
     expect(writeDB).toBeCalledTimes(1);
     expect(writeDB).toBeCalledWith(mockAppointment.subject, mockAppointment.date);
     expect(sendSms).toBeCalledTimes(1);
@@ -39,8 +43,8 @@ describe("handleSms", () => {
     const writeDB = jest.spyOn(dbModule, "writeDB").mockImplementation(() => {});
     const sendSms = jest.spyOn(sendSmsModule, "sendSms").mockImplementation(() => {});
 
-    handleSms(sms, startDate, endDate, client);
-    expect(parse).toBeCalledWith(sms.smsContent, startDate, endDate);
+    handleSms(sms, startDate, endDate, client, currentDate);
+    expect(parse).toBeCalledWith(sms, startDate, endDate, currentDate);
     expect(writeDB).toBeCalledTimes(0);
     expect(sendSms).toBeCalledTimes(1);
     expect(sendSms).toBeCalledWith("Parse Error!", client, sms.source);
@@ -53,9 +57,9 @@ describe("handleSms", () => {
     });
     const sendSms = jest.spyOn(sendSmsModule, "sendSms").mockImplementation(() => {});
 
-    handleSms(sms, startDate, endDate, client);
+    handleSms(sms, startDate, endDate, client, currentDate);
     expect(parse).toBeCalledTimes(1);
-    expect(parse).toBeCalledWith(sms.smsContent, startDate, endDate);
+    expect(parse).toBeCalledWith(sms, startDate, endDate, currentDate);
     expect(writeDB).toBeCalledTimes(1);
     expect(writeDB).toBeCalledWith(mockAppointment.subject, mockAppointment.date);
     expect(writeDB).toThrow(new AppointmentTakenError("Appointment taken"));

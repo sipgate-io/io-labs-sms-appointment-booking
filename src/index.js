@@ -26,7 +26,9 @@ async function run() {
     archived: true
     }
   })
-  handleAllSms(smsEntries,startDate,endDate, client);
+
+  const currentDate = new Date();
+  handleAllSms(smsEntries,startDate,endDate, client, currentDate);
 }
 
 run();
