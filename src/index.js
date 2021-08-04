@@ -12,9 +12,7 @@ async function run() {
 
   const client = sipgateIO({ tokenId, token });
   const historyModule = createHistoryModule(client);
-  const historyEntries = await historyModule.fetchAll();
-  const response = historyEntries.filter((entry) => entry.type === "SMS" && entry.direction === "INCOMING");
-
+  const smsEntries = await historyModule.fetchAll({types:["SMS"], directions:["INCOMING"], archived: false });
   let startDate = null;
   let endDate = null;
   try {
@@ -23,8 +21,12 @@ async function run() {
   } catch (e) {
     console.warn(e.message);
   }
-
-  handleAllSms(response,startDate,endDate, client);
+  historyModule.batchUpdateEvents(smsEntries, () => {
+   return {
+    archived: true
+    }
+  })
+  handleAllSms(smsEntries,startDate,endDate, client);
 }
 
 run();

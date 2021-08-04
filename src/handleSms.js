@@ -12,8 +12,9 @@ export function handleAllSms(response, startDate, endDate, client) {
 export function handleSms(sms, startDate, endDate, client) {
   try {
     const { subject, date } = parse(sms.smsContent, startDate, endDate);
-    writeDB(subject, date);
+    writeDB(subject, date, sms.source);
     sendSms(`Dein Termin am ${date.toLocaleDateString("de-DE")} um ${date.toLocaleTimeString("de-DE")} wurde erfolgreich gebucht.`, client, sms.source);
+
   } catch (e) {
     switch (e.constructor) {
       case SmsParseError:

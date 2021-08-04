@@ -1,7 +1,7 @@
 const mockResponse = [
   {
     id: "5005443120",
-    source: "+491788798878",
+    source: "",
     target: "+49203928694653",
     sourceAlias: "SMS",
     targetAlias: "",
@@ -23,7 +23,7 @@ const mockResponse = [
   },
   {
     id: "5005443120",
-    source: "+491788798878",
+    source: "",
     target: "+49203928694653",
     sourceAlias: "SMS",
     targetAlias: "",
@@ -45,7 +45,7 @@ const mockResponse = [
   },
   {
     id: "5005443120",
-    source: "+491788798878",
+    source: "",
     target: "+49203928694653",
     sourceAlias: "SMS",
     targetAlias: "",
