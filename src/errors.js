@@ -5,6 +5,13 @@ class SmsParseError extends Error {
   }
 }
 
+class PhoneNumberError extends Error {
+  constructor(message) {
+    super(message);
+    this.name = "PhoneNumberError";
+  }
+}
+
 class AppointmentTakenError extends Error {
   constructor(message) {
     super(message);
@@ -12,4 +19,4 @@ class AppointmentTakenError extends Error {
   }
 }
 
-export { SmsParseError, AppointmentTakenError };
+export { SmsParseError, AppointmentTakenError, PhoneNumberError };

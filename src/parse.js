@@ -1,7 +1,14 @@
-import { SmsParseError, AppointmentTakenError } from "./errors.js";
+import { SmsParseError, AppointmentTakenError, PhoneNumberError } from "./errors.js";
 
-export function parse(smsBody, startDate, endDate) {
-  let tokens = smsBody
+export function parse(sms, startDate, endDate) {
+
+  if (!isValidE164PhoneNumber(sms.source)) {
+    throw new PhoneNumberError(
+      `Keine gültige E164 Telefonnummer: ${sms.source}`
+    );
+  }
+
+  let tokens = sms.smsContent
     .split(/Termin:|,/)
     .filter((token) => token !== "")
     .map((token) => token.trim());
@@ -84,4 +91,9 @@ function parseDate(dateString) {
 
 function isValidDate(date) {
   return date.getTime() === date.getTime();
+}
+
+function isValidE164PhoneNumber(phoneNumber) {
+  const regEx = /^\+[1-9]\d{10,14}$/;
+  return regEx.test(phoneNumber);
 }

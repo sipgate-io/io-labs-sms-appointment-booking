@@ -7,15 +7,14 @@ export function readDB() {
   return deserialize(json);
 }
 
-export function writeDB(subject, date, source) {
-  const data = serialize(subject, date.toISOString(), source);
+export function writeDB(subject, date) {
+  const data = serialize(subject, date.toISOString());
   writeFileSync("db.json", data, { flags: "w+" });
 }
 
-function serialize(subject, date, source) {
+function serialize(subject, date) {
   const data = {
-    subject,
-    source
+    subject
   };
 
   let json = null;

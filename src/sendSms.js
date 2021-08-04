@@ -19,5 +19,5 @@ export async function sendSms(message, client, target) {
             datetime
         })
 
-    console.log("SMS gesendet: " + message);
+    console.log(`SMS gesendet an ${target}: ${message}`);
 }
