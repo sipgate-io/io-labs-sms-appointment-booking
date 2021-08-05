@@ -2,11 +2,10 @@ import * as dotenv from "dotenv";
 import { parseTime } from "./parse.js";
 import { handleAllSms } from "./handleAllSms.js";
 import { createHistoryModule, sipgateIO } from "sipgateio";
-import mockResponse from "../test/mockSms.js";
 
 dotenv.config();
 
-async function run() {
+export async function run() {
   const tokenId = process.env.TOKEN_ID;
   const token = process.env.TOKEN;
 
