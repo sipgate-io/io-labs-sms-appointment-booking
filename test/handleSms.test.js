@@ -1,4 +1,8 @@
-import { SmsParseError, AppointmentTakenError, PhoneNumberError } from "../src/errors.js";
+import {
+  SmsParseError,
+  AppointmentTakenError,
+  PhoneNumberError,
+} from "../src/errors.js";
 import { handleSms } from "../src/handleSms";
 import * as sendSmsModule from "../src/sendSms";
 import * as dbModule from "../src/db";
@@ -14,6 +18,7 @@ describe("handleSms", () => {
   const mockAppointment = {
     subject: "asfd",
     date: currentDate,
+    source: "+49203928694000",
   };
   const sms = mockResponse[0];
   const startDate = { hour: 9, minute: 0 };
@@ -38,7 +43,8 @@ describe("handleSms", () => {
     expect(writeDB).toBeCalledTimes(1);
     expect(writeDB).toBeCalledWith(
       mockAppointment.subject,
-      mockAppointment.date
+      mockAppointment.date,
+      mockAppointment.source
     );
     expect(sendSms).toBeCalledTimes(1);
     expect(sendSms).toBeCalledWith(
@@ -80,7 +86,7 @@ describe("handleSms", () => {
     const sendSms = jest
       .spyOn(sendSmsModule, "sendSms")
       .mockImplementation(() => {});
-    
+
     handleSms(sms, startDate, endDate, client, currentDate);
     expect(parse).toBeCalledWith(sms, startDate, endDate, currentDate);
     expect(writeDB).toBeCalledTimes(0);
@@ -97,7 +103,7 @@ describe("handleSms", () => {
     const sendSms = jest
       .spyOn(sendSmsModule, "sendSms")
       .mockImplementation(() => {});
-    
+
     handleSms(sms, startDate, endDate, client, currentDate);
     expect(parse).toBeCalledWith(sms, startDate, endDate, currentDate);
     expect(writeDB).toBeCalledTimes(0);
@@ -121,7 +127,8 @@ describe("handleSms", () => {
     expect(writeDB).toBeCalledTimes(1);
     expect(writeDB).toBeCalledWith(
       mockAppointment.subject,
-      mockAppointment.date
+      mockAppointment.date,
+      mockAppointment.source
     );
     expect(writeDB).toThrow(new AppointmentTakenError("Appointment taken"));
     expect(sendSms).toBeCalledTimes(1);
