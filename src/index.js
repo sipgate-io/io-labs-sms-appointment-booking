@@ -1,10 +1,9 @@
 import * as dotenv from "dotenv";
 import { parseTime } from "./parse.js";
-import { handleAllSms } from "./handleSms.js";
-import { createHistoryModule, sipgateIO} from 'sipgateio';
+import { handleAllSms } from "./handleAllSms.js";
+import { createHistoryModule, sipgateIO } from "sipgateio";
 
 dotenv.config();
-
 
 async function run() {
   const tokenId = process.env.TOKEN_ID;
@@ -12,7 +11,11 @@ async function run() {
 
   const client = sipgateIO({ tokenId, token });
   const historyModule = createHistoryModule(client);
-  const smsEntries = await historyModule.fetchAll({types:["SMS"], directions:["INCOMING"], archived: false });
+  const smsEntries = await historyModule.fetchAll({
+    types: ["SMS"],
+    directions: ["INCOMING"],
+    archived: false,
+  });
   let startDate = null;
   let endDate = null;
   try {
@@ -22,13 +25,13 @@ async function run() {
     console.warn(e.message);
   }
   historyModule.batchUpdateEvents(smsEntries, () => {
-   return {
-    archived: true
-    }
-  })
+    return {
+      archived: true,
+    };
+  });
 
   const currentDate = new Date();
-  handleAllSms(smsEntries,startDate,endDate, client, currentDate);
+  handleAllSms(smsEntries, startDate, endDate, client, currentDate);
 }
 
 run();

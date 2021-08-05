@@ -1,7 +1,10 @@
-import { SmsParseError, AppointmentTakenError, PhoneNumberError } from "./errors.js";
+import {
+  SmsParseError,
+  AppointmentTakenError,
+  PhoneNumberError,
+} from "./errors.js";
 
 export function parse(sms, startDate, endDate, currentDate) {
-
   if (!isValidE164PhoneNumber(sms.source)) {
     throw new PhoneNumberError(
       `Keine gültige E164 Telefonnummer: ${sms.source}`
@@ -12,8 +15,8 @@ export function parse(sms, startDate, endDate, currentDate) {
     .split(/Termin:|,/)
     .filter((token) => token !== "")
     .map((token) => token.trim());
-  
-  if(tokens.length != 3){
+
+  if (tokens.length != 3) {
     throw new SmsParseError(
       "Die Eingabe war fehlerhaft, bitte überprüfe deinen Input."
     );
@@ -45,14 +48,15 @@ export function parse(sms, startDate, endDate, currentDate) {
 
   if (hour > endDate.hour || hour < startDate.hour) {
     throw new SmsParseError(
-      `Du kannst nur zwischen ${String(
-        startDate.hour
-      ).padStart(2, "0")}:${String(startDate.minute).padStart(
+      `Du kannst nur zwischen ${String(startDate.hour).padStart(
         2,
         "0"
-      )} und ${String(endDate.hour).padStart(2, "0")}:${String(
-        endDate.minute
-      ).padStart(2, "0")} einen Termin buchen.`
+      )}:${String(startDate.minute).padStart(2, "0")} und ${String(
+        endDate.hour
+      ).padStart(2, "0")}:${String(endDate.minute).padStart(
+        2,
+        "0"
+      )} einen Termin buchen.`
     );
   }
 
@@ -81,7 +85,10 @@ export function parseTime(timeString) {
 export function parseDate(dateString, currentDate) {
   const day = parseInt(dateString.split(".")[0]);
   const month = parseInt(dateString.split(".")[1]);
-  const year = dateString.split(".").length == 3 ? parseInt(dateString.split(".")[2]) : currentDate.getFullYear();
+  const year =
+    dateString.split(".").length == 3
+      ? parseInt(dateString.split(".")[2])
+      : currentDate.getFullYear();
 
   return { month, day, year };
 }
@@ -95,9 +102,8 @@ function isValidE164PhoneNumber(phoneNumber) {
   return regEx.test(phoneNumber);
 }
 
-function checkYear(date, currentDate){
-  if(currentDate > date){
+export function checkYear(date, currentDate) {
+  if (currentDate > date) {
     date.setFullYear(currentDate.getFullYear() + 1);
   }
 }
-

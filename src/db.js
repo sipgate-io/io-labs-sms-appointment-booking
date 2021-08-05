@@ -14,7 +14,7 @@ export function writeDB(subject, date) {
 
 function serialize(subject, date) {
   const data = {
-    subject
+    subject,
   };
 
   let json = null;
@@ -22,7 +22,9 @@ function serialize(subject, date) {
     const currentData = readDB();
 
     if (currentData[date] !== undefined) {
-      throw new AppointmentTakenError("Sorry, zu diesem Zeitpunkt gibt es keinen freien Termin.");
+      throw new AppointmentTakenError(
+        "Sorry, zu diesem Zeitpunkt gibt es keinen freien Termin."
+      );
     }
 
     currentData[date] = data;
