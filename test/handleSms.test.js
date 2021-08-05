@@ -1,4 +1,4 @@
-import { SmsParseError, AppointmentTakenError } from "../src/errors.js";
+import { SmsParseError, AppointmentTakenError, PhoneNumberError } from "../src/errors.js";
 import { handleSms } from "../src/handleSms";
 import * as sendSmsModule from "../src/sendSms";
 import * as dbModule from "../src/db";
@@ -68,6 +68,40 @@ describe("handleSms", () => {
     expect(writeDB).toBeCalledTimes(0);
     expect(sendSms).toBeCalledTimes(1);
     expect(sendSms).toBeCalledWith("Parse Error!", client, sms.source);
+  });
+
+  test("should try to parse the phonenumber and return a PhoneNumberError", () => {
+    const parse = jest.spyOn(parseModule, "parse").mockImplementation(() => {
+      throw new PhoneNumberError("Phone Number Error!");
+    });
+    const writeDB = jest
+      .spyOn(dbModule, "writeDB")
+      .mockImplementation(() => {});
+    const sendSms = jest
+      .spyOn(sendSmsModule, "sendSms")
+      .mockImplementation(() => {});
+    
+    handleSms(sms, startDate, endDate, client, currentDate);
+    expect(parse).toBeCalledWith(sms, startDate, endDate, currentDate);
+    expect(writeDB).toBeCalledTimes(0);
+    expect(sendSms).toBeCalledTimes(0);
+  });
+
+  test("should throw a generic error", () => {
+    const parse = jest.spyOn(parseModule, "parse").mockImplementation(() => {
+      throw new Error("Generic Error!");
+    });
+    const writeDB = jest
+      .spyOn(dbModule, "writeDB")
+      .mockImplementation(() => {});
+    const sendSms = jest
+      .spyOn(sendSmsModule, "sendSms")
+      .mockImplementation(() => {});
+    
+    handleSms(sms, startDate, endDate, client, currentDate);
+    expect(parse).toBeCalledWith(sms, startDate, endDate, currentDate);
+    expect(writeDB).toBeCalledTimes(0);
+    expect(sendSms).toBeCalledTimes(0);
   });
 
   test("should try writing to the DB and send an error message per SMS if an appointment is not available", () => {

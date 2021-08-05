@@ -5,7 +5,6 @@ import {
   AppointmentTakenError,
   PhoneNumberError,
 } from "../src/errors.js";
-import { check } from "prettier";
 
 describe("Parse function", () => {
   const startDate = { hour: 8, minute: 0 };

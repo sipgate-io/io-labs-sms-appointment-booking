@@ -2,6 +2,7 @@ import * as dotenv from "dotenv";
 import { parseTime } from "./parse.js";
 import { handleAllSms } from "./handleAllSms.js";
 import { createHistoryModule, sipgateIO } from "sipgateio";
+import mockResponse from "../test/mockSms.js";
 
 dotenv.config();
 

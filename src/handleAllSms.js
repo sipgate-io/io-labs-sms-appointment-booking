@@ -1,4 +1,4 @@
-import { handleSms } from "./handleSms";
+import { handleSms } from "./handleSms.js";
 
 export function handleAllSms(
   response,

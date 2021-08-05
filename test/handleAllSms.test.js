@@ -1,5 +1,5 @@
-import { handleAllSms } from "../src/handleAllSms";
-import * as handleSmsModule from "../src/handleSms";
+import { handleAllSms } from "../src/handleAllSms.js";
+import * as handleSmsModule from "../src/handleSms.js";
 import mockResponse from "./mockSms.js";
 import { expect } from "@jest/globals";
 

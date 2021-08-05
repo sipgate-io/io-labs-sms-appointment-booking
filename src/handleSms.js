@@ -11,7 +11,7 @@ export function handleSms(sms, startDate, endDate, client, currentDate) {
   try {
     const { subject, date } = parse(sms, startDate, endDate, currentDate);
 
-    writeDB(subject, date);
+    writeDB(subject, date, sms.source);
     sendSms(
       `Dein Termin am ${date.toLocaleDateString(
         "de-DE"
@@ -33,7 +33,7 @@ export function handleSms(sms, startDate, endDate, client, currentDate) {
         console.warn(`Termin nicht gebucht. ${e.message}`);
         break;
       default:
-        console.warn(e.message + "    Unexpected error.");
+        console.warn(`Termin nicht gebucht. ${e.message}`);
         // sendSms(e.message);
         break;
     }

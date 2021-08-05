@@ -4,17 +4,20 @@ import { AppointmentTakenError } from "./errors.js";
 export function readDB() {
   const buffer = readFileSync("db.json");
   const json = buffer.toString();
-  return deserialize(json);
+  const result = deserialize(json);
+  return result;
 }
 
-export function writeDB(subject, date) {
-  const data = serialize(subject, date.toISOString());
+export function writeDB(subject, date, source) {
+  const data = serialize(subject, date.toISOString(), source);
   writeFileSync("db.json", data, { flags: "w+" });
 }
 
-function serialize(subject, date) {
+function serialize(subject, date, source) {
   const data = {
     subject,
+    date,
+    source,
   };
 
   let json = null;
