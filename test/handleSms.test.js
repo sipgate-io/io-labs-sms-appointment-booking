@@ -26,7 +26,7 @@ describe("handleSms", () => {
 
   const client = {};
 
-  test("should write to the DB and send an comfirmation SMS if it is successful", () => {
+  test("should write to the DB and send a confirmation SMS if it is successful", () => {
     const parse = jest
       .spyOn(parseModule, "parse")
       .mockReturnValue(mockAppointment);
@@ -53,6 +53,39 @@ describe("handleSms", () => {
       )} um ${mockAppointment.date.toLocaleTimeString(
         "de-DE"
       )} wurde erfolgreich gebucht.`,
+      client,
+      sms.source
+    );
+  });
+
+  test("should write to the DB and send a confirmation SMS for an appointment in the next year", () => {
+    const parse = jest
+      .spyOn(parseModule, "parse")
+      .mockReturnValue({ ...mockAppointment, changedToNextYear: true });
+    const writeDB = jest
+      .spyOn(dbModule, "writeDB")
+      .mockImplementation(() => {});
+    const sendSms = jest
+      .spyOn(sendSmsModule, "sendSms")
+      .mockImplementation(() => {});
+
+    const _currentDate = new Date(2021, 10, 10);
+    handleSms(sms, startDate, endDate, client, _currentDate);
+    expect(parse).toBeCalledTimes(1);
+    expect(parse).toBeCalledWith(sms, startDate, endDate, _currentDate);
+    expect(writeDB).toBeCalledTimes(1);
+    expect(writeDB).toBeCalledWith(
+      mockAppointment.subject,
+      mockAppointment.date,
+      mockAppointment.source
+    );
+    expect(sendSms).toBeCalledTimes(1);
+    expect(sendSms).toBeCalledWith(
+      `Dein Termin am ${mockAppointment.date.toLocaleDateString(
+        "de-DE"
+      )} um ${mockAppointment.date.toLocaleTimeString(
+        "de-DE"
+      )} wurde erfolgreich im nächsten Jahr gebucht.`,
       client,
       sms.source
     );

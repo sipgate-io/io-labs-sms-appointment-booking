@@ -27,7 +27,7 @@ export function parse(sms, startDate, endDate, currentDate) {
   const subject = tokens[2];
   const date = new Date(year, month - 1, day, hour, minute);
 
-  checkYear(date, currentDate);
+  const changedToNextYear = checkYear(date, currentDate);
   if (!isValidDate(date)) {
     throw new SmsParseError(
       "Das Datum konnte nicht analysiert werden, bitte überprüfe deinen Input."
@@ -60,7 +60,7 @@ export function parse(sms, startDate, endDate, currentDate) {
     );
   }
 
-  return { subject, date };
+  return { subject, date, changedToNextYear };
 }
 
 export function parseTime(timeString) {
@@ -105,5 +105,7 @@ function isValidE164PhoneNumber(phoneNumber) {
 export function checkYear(date, currentDate) {
   if (currentDate > date) {
     date.setFullYear(currentDate.getFullYear() + 1);
+    return true;
   }
+  return false;
 }

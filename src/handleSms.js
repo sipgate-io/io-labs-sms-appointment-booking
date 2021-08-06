@@ -9,16 +9,24 @@ import { sendSms } from "./sendSms.js";
 
 export function handleSms(sms, startDate, endDate, client, currentDate) {
   try {
-    const { subject, date } = parse(sms, startDate, endDate, currentDate);
+    const { subject, date, changedToNextYear } = parse(
+      sms,
+      startDate,
+      endDate,
+      currentDate
+    );
 
     writeDB(subject, date, sms.source);
-    sendSms(
-      `Dein Termin am ${date.toLocaleDateString(
-        "de-DE"
-      )} um ${date.toLocaleTimeString("de-DE")} wurde erfolgreich gebucht.`,
-      client,
-      sms.source
-    );
+    const message = changedToNextYear
+      ? `Dein Termin am ${date.toLocaleDateString(
+          "de-DE"
+        )} um ${date.toLocaleTimeString(
+          "de-DE"
+        )} wurde erfolgreich im nächsten Jahr gebucht.`
+      : `Dein Termin am ${date.toLocaleDateString(
+          "de-DE"
+        )} um ${date.toLocaleTimeString("de-DE")} wurde erfolgreich gebucht.`;
+    sendSms(message, client, sms.source);
   } catch (e) {
     switch (e.constructor) {
       case SmsParseError:
@@ -33,8 +41,7 @@ export function handleSms(sms, startDate, endDate, client, currentDate) {
         console.warn(`Termin nicht gebucht. ${e.message}`);
         break;
       default:
-        console.warn(`Termin nicht gebucht. ${e.message}`);
-        // sendSms(e.message);
+        console.warn(`Termin nicht gebucht. ${e}`);
         break;
     }
   }

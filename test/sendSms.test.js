@@ -8,6 +8,7 @@ const createSMSModule = sipgateio.createSMSModule;
 
 beforeEach(() => {
   createSMSModule.mockReset();
+  jest.spyOn(console, "log").mockImplementation(() => {});
 });
 
 describe("SendSms", () => {
