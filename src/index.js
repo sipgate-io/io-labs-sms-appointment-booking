@@ -33,5 +33,3 @@ export async function run() {
   const currentDate = new Date();
   handleAllSms(smsEntries, startDate, endDate, client, currentDate);
 }
-
-run();
