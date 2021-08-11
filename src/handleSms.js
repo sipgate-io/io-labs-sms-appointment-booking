@@ -9,7 +9,7 @@ import { sendSms } from "./sendSms.js";
 
 export function handleSms(sms, startDate, endDate, client, currentDate) {
   try {
-    const { subject, date, changedToNextYear } = parse(
+    const { subject, date } = parse(
       sms,
       startDate,
       endDate,
@@ -17,13 +17,8 @@ export function handleSms(sms, startDate, endDate, client, currentDate) {
     );
 
     writeDB(subject, date, sms.source);
-    const message = changedToNextYear
-      ? `Dein Termin am ${date.toLocaleDateString(
-          "de-DE"
-        )} um ${date.toLocaleTimeString(
-          "de-DE"
-        )} wurde erfolgreich im nächsten Jahr gebucht.`
-      : `Dein Termin am ${date.toLocaleDateString(
+    const message =
+      `Dein Termin am ${date.toLocaleDateString(
           "de-DE"
         )} um ${date.toLocaleTimeString("de-DE")} wurde erfolgreich gebucht.`;
     sendSms(message, client, sms.source);

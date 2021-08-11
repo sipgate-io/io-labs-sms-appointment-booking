@@ -22,12 +22,20 @@ export function parse(sms, startDate, endDate, currentDate) {
     );
   }
 
-  const { day, month, year } = parseDate(tokens[0], currentDate);
+  const { day, month, year } = parseDate(tokens[0]);
   const { hour, minute } = parseTime(tokens[1]);
   const subject = tokens[2];
-  const date = new Date(year, month - 1, day, hour, minute);
+  let date;
 
-  const changedToNextYear = checkYear(date, currentDate);
+  if(year) {
+    const provisionalDate = new Date(year, month - 1, day, hour, minute);
+    if (currentDate > provisionalDate) {
+        date = getUpcoming(month, day, hour, minute, currentDate);
+    }
+  } else {
+    date = getUpcoming(month, day, hour, minute, currentDate);
+  }
+
   if (!isValidDate(date)) {
     throw new SmsParseError(
       "Das Datum konnte nicht analysiert werden, bitte überprüfe deinen Input."
@@ -60,7 +68,15 @@ export function parse(sms, startDate, endDate, currentDate) {
     );
   }
 
-  return { subject, date, changedToNextYear };
+  return { subject, date };
+}
+
+function getUpcoming(month, day, hour, minute, currentDate) {
+  const provisionalDate = new Date(currentDate.year, month - 1, day, hour, minute);
+  if(provisionalDate < currentDate){
+    return new Date(currentDate.year + 1, month - 1, day, hour, minute);
+  }
+  return provisionalDate;
 }
 
 export function parseTime(timeString) {
@@ -82,13 +98,13 @@ export function parseTime(timeString) {
   return { hour, minute };
 }
 
-export function parseDate(dateString, currentDate) {
+export function parseDate(dateString) {
   const day = parseInt(dateString.split(".")[0]);
   const month = parseInt(dateString.split(".")[1]);
   const year =
     dateString.split(".").length == 3
       ? parseInt(dateString.split(".")[2])
-      : currentDate.getFullYear();
+      : undefined;
 
   return { month, day, year };
 }
