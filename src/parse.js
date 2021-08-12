@@ -9,43 +9,97 @@ function parseDateString(dateString) {
     // 2dez
     // 04 Mar
     // 14ter Juni
+    // 31.12.
+    // 31 dezember2024
+    // 31.12.14
+    // 31 12 2015
 
-    const dayRegex = /\d{1,2}/;
-    const day = parseInt(dateString.match(dayRegex)[0]);
+    const dayOrMonthRegex = /\d{1,4}/g;
+    const matchResult = dateString.match(dayOrMonthRegex);
+    const day = parseInt(matchResult[0]);
 
-    let month;
+    let month, year;
 
-    switch (true) {
-        case /jan(\.|uar)?/i.test(dateString):
-            month = 1; break;
-        case /feb(\.|ruar)?/i.test(dateString):
-            month = 2; break;
-        case /m(a|ä|ae)r(\.|z)?/i.test(dateString):
-            month = 3; break;
-        case /apr(\.|il)?/i.test(dateString):
-            month = 4; break;
-        case /mai\.?/i.test(dateString):
-            month = 5; break;
-        case /jun(\.|i)?/i.test(dateString):
-            month = 6; break;
-        case /jul(\.|y|i)?/i.test(dateString):
-            month = 7; break;
-        case /aug(\.|ust)?/i.test(dateString):
-            month = 8; break;
-        case /sep(\.|t(\.|ember)?)?/i.test(dateString):
-            month = 9; break;
-        case /okt(\.|ober)?/i.test(dateString):
-            month = 10; break;
-        case /nov(\.|ember)?/i.test(dateString):
-            month = 11; break;
-        case /dez(\.|ember)?/i.test(dateString):
-            month = 12; break;
-        default:
-            month = 1000;
+    if (matchResult.length === 1) {
+        switch (true) {
+            case /jan(\.|uar)?/i.test(dateString):
+                month = 1; break;
+            case /feb(\.|ruar)?/i.test(dateString):
+                month = 2; break;
+            case /m(a|ä|ae)r(\.|z)?/i.test(dateString):
+                month = 3; break;
+            case /apr(\.|il)?/i.test(dateString):
+                month = 4; break;
+            case /mai\.?/i.test(dateString):
+                month = 5; break;
+            case /jun(\.|i)?/i.test(dateString):
+                month = 6; break;
+            case /jul(\.|y|i)?/i.test(dateString):
+                month = 7; break;
+            case /aug(\.|ust)?/i.test(dateString):
+                month = 8; break;
+            case /sep(\.|t(\.|ember)?)?/i.test(dateString):
+                month = 9; break;
+            case /okt(\.|ober)?/i.test(dateString):
+                month = 10; break;
+            case /nov(\.|ember)?/i.test(dateString):
+                month = 11; break;
+            case /dez(\.|ember)?/i.test(dateString):
+                month = 12; break;
+            default:
+                throw new SmsParseError(
+                    "Die Eingabe war fehlerhaft, bitte überprüfe deinen Input."
+                );
+        }
+    } else if (matchResult.length === 2) {
+        year = parseInt(matchResult[1]);
+        switch (true) {
+            case /jan(\.|uar)?/i.test(dateString):
+                month = 1; break;
+            case /feb(\.|ruar)?/i.test(dateString):
+                month = 2; break;
+            case /m(a|ä|ae)r(\.|z)?/i.test(dateString):
+                month = 3; break;
+            case /apr(\.|il)?/i.test(dateString):
+                month = 4; break;
+            case /mai\.?/i.test(dateString):
+                month = 5; break;
+            case /jun(\.|i)?/i.test(dateString):
+                month = 6; break;
+            case /jul(\.|y|i)?/i.test(dateString):
+                month = 7; break;
+            case /aug(\.|ust)?/i.test(dateString):
+                month = 8; break;
+            case /sep(\.|t(\.|ember)?)?/i.test(dateString):
+                month = 9; break;
+            case /okt(\.|ober)?/i.test(dateString):
+                month = 10; break;
+            case /nov(\.|ember)?/i.test(dateString):
+                month = 11; break;
+            case /dez(\.|ember)?/i.test(dateString):
+                month = 12; break;
+            default:
+                month = parseInt(matchResult[1]);
+                year = undefined;
+        }
+    } else {
+        month = parseInt(matchResult[1]);
+        if (matchResult[2].length === 2) {
+            year = parseInt("20" + matchResult[2]);
+        } else if (matchResult[2].length === 4) {
+            year = parseInt(matchResult[2]);
+        } else {
+            throw new SmsParseError(
+                "Die Eingabe war fehlerhaft, bitte überprüfe deinen Input."
+            );
+        }
     }
-
-    return { month, day };
-
+    if (!month) {
+        throw new SmsParseError(
+            "Die Eingabe war fehlerhaft, bitte überprüfe deinen Input."
+        );
+    }
+    return { year, month, day };
 }
 
 export function parse(sms, startDate, endDate, currentDate) {
@@ -61,11 +115,17 @@ export function parse(sms, startDate, endDate, currentDate) {
         );
     }
 
-    const dateRegex = /\d{1,2}(\.|te(r|n))?( )?(jan(\.|uar)?|feb(\.|ruar)?|m(ä|a|ae)r(\.|z)?|apr(\.|il)?|mai|jun(\.|i)?|jul(\.|y|i)?|aug(\.|ust)?|sep(\.|t(\.|ember)?)?|okt(\.|ober)?|nov(\.|ember)?|dez(\.|ember)?)/gi
-    const dateString = sms.smsContent.match(dateRegex)[0];
-    const { month, day } = parseDateString(dateString);
+    const dateRegex = /(?=(\d{1,2}))\1(\.|te(r|n))?( )?((jan(\.|uar)?|feb(\.|ruar)?|m(ä|a|ae)r(\.|z)?|apr(\.|il)?|mai|jun(\.|i)?|jul(\.|y|i)?|aug(\.|ust)?|sep(\.|t(\.|ember)?)?|okt(\.|ober)?|nov(\.|ember)?|dez(\.|ember)?)|\d{1,2}\.?)( )?(\d{2,4})?/gi;
+    const matchResult = sms.smsContent.match(dateRegex);
+    if (!matchResult) {
+        throw new SmsParseError(
+            "Die Eingabe war fehlerhaft, bitte überprüfe deinen Input."
+        );
+    }
+    const dateString = matchResult[0];
+    const { year, month, day } = parseDateString(dateString);
 
-    console.log(month, day);
+    console.log(year, month, day);
 
     // let tokens = sms.smsContent
     // 	.split(/Termin:|,/)

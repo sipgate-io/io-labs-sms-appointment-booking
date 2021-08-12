@@ -140,9 +140,10 @@ describe("Parse function", () => {
 	});
 
 	test("should return subject and date when not formatted sms could be parsed", () => {
+	
 		const SMS = {
 			source: source,
-			smsContent: "Ich möchte einen Termin am 08. sept. um 14 Uhr buchen zum Haare schneiden.",
+			smsContent: "Ich möchte einen Termin am 31 mar. 2015 um 14 Uhr buchen zum Haare schneiden.",
 		};
 		const { date } = parse(SMS, startDate, endDate, currentDate);
 		const otherDate = new Date(2021, 9, 3, 14, 0);
