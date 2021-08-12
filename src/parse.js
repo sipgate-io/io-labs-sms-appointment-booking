@@ -73,7 +73,7 @@ export function parse(sms, startDate, endDate, currentDate) {
 	return { subject, date };
 }
 
-function getUpcoming(month, day, hour, minute, currentDate) {
+export function getUpcoming(month, day, hour, minute, currentDate) {
 	const provisionalDate = new Date(
 		currentDate.getFullYear(),
 		month - 1,
@@ -98,13 +98,13 @@ export function parseTime(timeString) {
 	const minute = parseInt(timeString.split(":")[1]);
 
 	if (hour > 23 || hour < 0) {
-		throw new AppointmentTakenError(
+		throw new SmsParseError(
 			"Sorry, die Stunden sind außerhalb des gültigen Bereichs, die Stundenanzahl muss zwischen 0 und 23 Stunden liegen."
 		);
 	}
 
 	if (minute > 59 || minute < 0) {
-		throw new AppointmentTakenError(
+		throw new SmsParseError(
 			"Sorry, die Minuten sind außerhalb des gültigen Bereichs, der gültige Bereich der Minuten liegt zwischen 0 und 59."
 		);
 	}
@@ -130,12 +130,4 @@ function isValidDate(date) {
 function isValidE164PhoneNumber(phoneNumber) {
 	const regEx = /^\+[1-9]\d{10,14}$/;
 	return regEx.test(phoneNumber);
-}
-
-export function checkYear(date, currentDate) {
-	if (currentDate > date) {
-		date.setFullYear(currentDate.getFullYear() + 1);
-		return true;
-	}
-	return false;
 }

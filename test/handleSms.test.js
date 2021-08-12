@@ -85,7 +85,7 @@ describe("handleSms", () => {
         "de-DE"
       )} um ${mockAppointment.date.toLocaleTimeString(
         "de-DE"
-      )} wurde erfolgreich im nächsten Jahr gebucht.`,
+      )} wurde erfolgreich gebucht.`,
       client,
       sms.source
     );
