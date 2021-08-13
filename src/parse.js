@@ -12,6 +12,7 @@ function parseDateString(dateString) {
     // 31.12.
     // 31 dezember2024
     // 31.12.14
+    // jan jan. januar
     // 31 12 2015
 
     const dayOrMonthRegex = /\d{1,4}/g;
@@ -102,6 +103,12 @@ function parseDateString(dateString) {
     return { year, month, day };
 }
 
+export function parseTimeString(timeString) {
+    
+
+
+}
+
 export function parse(sms, startDate, endDate, currentDate) {
     if (!isValidE164PhoneNumber(sms.source)) {
         throw new PhoneNumberError(
@@ -116,16 +123,28 @@ export function parse(sms, startDate, endDate, currentDate) {
     }
 
     const dateRegex = /(?=(\d{1,2}))\1(\.|te(r|n))?( )?((jan(\.|uar)?|feb(\.|ruar)?|m(ä|a|ae)r(\.|z)?|apr(\.|il)?|mai|jun(\.|i)?|jul(\.|y|i)?|aug(\.|ust)?|sep(\.|t(\.|ember)?)?|okt(\.|ober)?|nov(\.|ember)?|dez(\.|ember)?)|\d{1,2}\.?)( )?(\d{2,4})?/gi;
-    const matchResult = sms.smsContent.match(dateRegex);
-    if (!matchResult) {
+    const dateResult = sms.smsContent.match(dateRegex);
+    if (!dateResult) {
         throw new SmsParseError(
             "Die Eingabe war fehlerhaft, bitte überprüfe deinen Input."
         );
     }
-    const dateString = matchResult[0];
+    const dateString = dateResult[0];
     const { year, month, day } = parseDateString(dateString);
+    console.log(`ddMMyyyy: ${day}.${month}.${year}`);
 
-    console.log(year, month, day);
+    const smsTextWithoutDateString = sms.smsContent.replace(dateString, "");
+    console.log("Text without Date: "+smsTextWithoutDateString);
+
+    const timeRegex = /(\d{1,2}:\d{2})|(\d{1,2}( )?Uhr)/gi;
+    const timeString = smsTextWithoutDateString.match(timeRegex);
+    if (!timeString) {
+        throw new SmsParseError(
+            "Die Eingabe war fehlerhaft, bitte überprüfe deinen Input."
+        );
+    }
+    const {hour, minute} = parseTimeString(timeString);
+    console.log("Time: "+timeString);
 
     // let tokens = sms.smsContent
     // 	.split(/Termin:|,/)

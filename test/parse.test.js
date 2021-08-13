@@ -143,7 +143,8 @@ describe("Parse function", () => {
 	
 		const SMS = {
 			source: source,
-			smsContent: "Ich möchte einen Termin am 31 mar. 2015 um 14 Uhr buchen zum Haare schneiden.",
+			smsContent: "Ich möchte einen Termin am 21. dez um 14:30 Uhr buchen zum Haare schneiden.",
+			//smsContent: "Ich hätte gerne Termin: Haareschneiden - 14:50 Uhr 21.03",
 		};
 		const { date } = parse(SMS, startDate, endDate, currentDate);
 		const otherDate = new Date(2021, 9, 3, 14, 0);
