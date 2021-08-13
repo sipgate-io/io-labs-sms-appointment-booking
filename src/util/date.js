@@ -27,8 +27,9 @@ function parseMonth(monthString) {
 }
 
 export function parseDateString(string) {
-    const dayWithWrittenMonthAndYearRegex = /\b(?<day>\d{1,2})(\.|te([rn]))?( ){0,4}(?<writtenMonth>jan(\.|uar)?|feb(\.|ruar)?|m(ä|a|ae)r([.z])?|apr(\.|il)?|mai|jun([.i])?|jul([.yi])?|aug(\.|ust)?|sep(\.|t(\.|ember)?)?|okt(\.|ober)?|nov(\.|ember)?|dez(\.|ember)?)( ){0,4}(?<year>\d{2,4})\b/i;
-    const dayWithWrittenMonthWithoutYearRegex = /\b(?<day>\d{1,2})(\.|te([rn]))?( ){0,4}(?<writtenMonth>jan(\.|uar)?|feb(\.|ruar)?|m(ä|a|ae)r([.z])?|apr(\.|il)?|mai|jun([.i])?|jul([.yi])?|aug(\.|ust)?|sep(\.|t(\.|ember)?)?|okt(\.|ober)?|nov(\.|ember)?|dez(\.|ember)?)\b/i;
+    const allMonthsRegexPattern = Object.values(months).map(monthRegex => monthRegex.source).join("|")
+    const dayWithWrittenMonthAndYearRegex = new RegExp(`\\b(?<day>\\d{1,2})(\\.|te([rn]))?( ){0,4}(?<writtenMonth>${allMonthsRegexPattern})( ){0,4}(?<year>\\d{2,4})\\b`, "i");
+    const dayWithWrittenMonthWithoutYearRegex = new RegExp(`\\b(?<day>\\d{1,2})(\\.|te([rn]))?( ){0,4}(?<writtenMonth>${allMonthsRegexPattern})\\b`, "i");
     const dayWithNumericMonthAndYearRegex = /\b(?<day>\d{1,2})(\.|te([rn])| )( ){0,4}(?<numericMonth>\d{1,2})([. ])( ){0,4}(?<year>\d{2,4})\b/;
     const dayWithNumericMonthWithoutYearRegex = /\b(?<day>\d{1,2})(\.|te([rn])| )( ){0,4}(?<numericMonth>\d{1,2})\b/;
 
@@ -37,7 +38,7 @@ export function parseDateString(string) {
         case dayWithWrittenMonthAndYearRegex.test(string): {
             const matchingGroups = dayWithWrittenMonthAndYearRegex.exec(string).groups;
             date = {
-                year: parseInt(matchingGroups.year),
+                year: matchingGroups.year,
                 month: parseMonth(matchingGroups.writtenMonth),
                 day: matchingGroups.day,
             };
@@ -84,25 +85,34 @@ export function parseDateString(string) {
 export function parseTimeString(string) {
     const spelledOutTimeRegex = /\b(?<hour>\d{1,2})( )?Uhr\b/i;
     const numericalTimeRegex = /\b(?<hour>\d{1,2}):(?<minute>\d{2})\b/i;
+
+    let time;
     switch (true) {
         case numericalTimeRegex.test(string): {
             const matchingGroups = numericalTimeRegex.exec(string).groups;
-            return {
+             time = {
                 hour: matchingGroups.hour,
                 minute: matchingGroups.minute,
-            }
+            };
+            break;
         }
         case spelledOutTimeRegex.test(string): {
             const matchingGroups = spelledOutTimeRegex.exec(string).groups;
-            return {
+            time = {
                 hour: matchingGroups.hour,
                 minute: 0,
-            }
+            };
+            break;
         }
         default:
             throw new SmsParseError(
                 "Die Eingabe war fehlerhaft, bitte überprüfe deinen Input."
             );
     }
+    Object.keys(time).forEach(key => {
+        time[key] = parseInt(time[key]);
+    })
+
+    return time;
 }
 

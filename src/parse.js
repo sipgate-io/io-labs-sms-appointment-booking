@@ -23,12 +23,12 @@ export function parse(sms, startDate, endDate, currentDate) {
     if (year) {
         const provisionalDate = new Date(year, month - 1, day, hour, minute);
         if (currentDate > provisionalDate) {
-            date = getUpcoming(month, day, hour, minute, currentDate);
+            date = getUpcomingDate(month, day, hour, minute, currentDate);
         } else {
             date = provisionalDate;
         }
     } else {
-        date = getUpcoming(month, day, hour, minute, currentDate);
+        date = getUpcomingDate(month, day, hour, minute, currentDate);
     }
 
     if (date.getDate() !== day) {
@@ -60,7 +60,7 @@ export function parse(sms, startDate, endDate, currentDate) {
     return {subject, date};
 }
 
-export function getUpcoming(month, day, hour, minute, currentDate) {
+export function getUpcomingDate(month, day, hour, minute, currentDate) {
     const provisionalDate = new Date(
         currentDate.getFullYear(),
         month - 1,

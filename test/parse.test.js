@@ -1,11 +1,11 @@
 import { expect, test, describe } from "@jest/globals";
-import { parse, parseDate, getUpcoming } from "../src/parse.js";
+import {parse, getUpcomingDate} from "../src/parse.js";
 import {
 	SmsParseError,
-	AppointmentTakenError,
 	PhoneNumberError,
 } from "../src/errors.js";
 import {parseWorkingTime} from "../src/util/environment";
+import {parseDateString} from "../src/util/date";
 
 describe("Parse function", () => {
 	const startDate = { hour: 8, minute: 0 };
@@ -43,18 +43,6 @@ describe("Parse function", () => {
 		);
 	});
 
-	test("should throw an error when smsContent contains invalid input", () => {
-		const SMS = {
-			source: "+491111111111111",
-			smsContent: "Termin: 25.02, 14:00, 14:00, Coding",
-		};
-		expect(() => parse(SMS, startDate, endDate, currentDate)).toThrow(
-			new SmsParseError(
-				"Die Eingabe war fehlerhaft, bitte überprüfe deinen Input."
-			)
-		);
-	});
-
 	test("should throw an error when smsContent contains no input", () => {
 		const SMS = {
 			source: "+491111111111111",
@@ -73,9 +61,10 @@ describe("Parse function", () => {
 			smsContent: "Termin: 25.02, 18:AA, Coding",
 		};
 		expect(() => parse(SMS, startDate, endDate, currentDate)).toThrow(
-			new SmsParseError(
-				"Das Datum des Termins ist falsch formatiert, bitte überprüfe deinen Input."
-			)
+			"Die Eingabe war fehlerhaft, bitte überprüfe deinen Input."
+		);
+		expect(() => parse(SMS, startDate, endDate, currentDate)).toThrow(
+			SmsParseError
 		);
 	});
 
@@ -109,7 +98,7 @@ describe("Parse function", () => {
 		);
 	});
 
-	test("should throw an error when the appointment is out of opening times", () => {
+	test("should throw an error when the appointment is not within the opening hours", () => {
 		const SMS = {
 			source: source,
 			smsContent: "Termin: 25.02, 18:00, Coding",
@@ -131,20 +120,42 @@ describe("Parse function", () => {
 
 	test("should return subject and date when everything could be parsed", () => {
 		const SMS = {
-			source: source,
-			smsContent: "Termin: 25.02, 14:00, Coding",
+			source: "+491111111111111",
+			smsContent: "Termin: 25.02, 14:00, 14:00, Coding",
 		};
 		const { subject, date } = parse(SMS, startDate, endDate, currentDate);
-		expect(subject).toBe("Coding");
+		expect(subject).toBe("Termin: 25.02, 14:00, 14:00, Coding");
 		const otherDate = new Date(2021, 1, 25, 14, 0);
 		expect(date).toStrictEqual(otherDate);
 	});
 
-	test("should return subject and date when not formatted sms could be parsed", () => {
+	test("should return subject and date when everything could be parsed", () => {
+		const SMS = {
+			source: source,
+			smsContent: "Termin: 25.02, 14:00, Coding",
+		};
+		const { subject, date } = parse(SMS, startDate, endDate, currentDate);
+		expect(subject).toBe("Termin: 25.02, 14:00, Coding");
+		const otherDate = new Date(2021, 1, 25, 14, 0);
+		expect(date).toStrictEqual(otherDate);
+	});
+
+	test("should return subject and date when unformatted sms could be parsed", () => {
 
 		const SMS = {
 			source: source,
-			smsContent: "Ich möchte einen Termin am 2. July   2021 Das machen wir um 14 Uhr , Update Software von 1.1.0 auf 1.1.1 2a21 234 um 14 Uhr buchen zum Haare schneiden.",
+			smsContent: "Ich möchte einen Termin am 2. July 2021 um 14 Uhr buchen zum Haare schneiden.",
+		};
+		const { date } = parse(SMS, startDate, endDate, currentDate);
+		const otherDate = new Date(2021, 6, 2, 14, 0);
+		expect(date).toStrictEqual(otherDate);
+	});
+
+	test("should return subject and date when unformatted sms could be parsed", () => {
+
+		const SMS = {
+			source: source,
+			smsContent: "Ich möchte einen Termin am 02.07.2021 14:00 Uhr buchen zum Haare schneiden.",
 		};
 		const { date } = parse(SMS, startDate, endDate, currentDate);
 		const otherDate = new Date(2021, 6, 2, 14, 0);
@@ -189,15 +200,15 @@ describe("ParseTime function", () => {
 });
 
 describe("ParseDate function", () => {
-	const currentDate = new Date(2021, 1, 10, 14, 0);
+	//const currentDate = new Date(2021, 1, 10, 14, 0);
 	test("should parse valid date without year; (dd.MM)", () => {
 		const date = "01.08";
-		const result = parseDate(date, currentDate);
-		expect(result).toStrictEqual({ day: 1, month: 8, year: undefined });
+		const result = parseDateString(date);
+		expect(result).toStrictEqual({ day: 1, month: 8, year: NaN });
 	});
 	test("should parse valid date with year; (dd.MM.yyyy)", () => {
 		const date = "01.08.2021";
-		const result = parseDate(date, currentDate);
+		const result = parseDateString(date);
 		expect(result).toStrictEqual({ day: 1, month: 8, year: 2021 });
 	});
 });
@@ -209,7 +220,7 @@ describe("getUpcoming function", () => {
 		const month = "1";
 		const hour = "12";
 		const minute = "0";
-		const result = getUpcoming(month, day, hour, minute, currentDate);
+		const result = getUpcomingDate(month, day, hour, minute, currentDate);
 		expect(result).toStrictEqual(new Date(2022, 0, 1, 12, 0));
 	});
 	test("should return date with current year", () => {
@@ -217,7 +228,7 @@ describe("getUpcoming function", () => {
 		const month = "3";
 		const hour = "12";
 		const minute = "0";
-		const result = getUpcoming(month, day, hour, minute, currentDate);
+		const result = getUpcomingDate(month, day, hour, minute, currentDate);
 		expect(result).toStrictEqual(new Date(2021, 2, 1, 12, 0));
 	});
 });
