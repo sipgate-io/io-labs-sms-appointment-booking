@@ -1,10 +1,11 @@
 import { expect, test, describe } from "@jest/globals";
-import { parse, parseTime, parseDate, getUpcoming } from "../src/parse.js";
+import { parse, parseDate, getUpcoming } from "../src/parse.js";
 import {
 	SmsParseError,
 	AppointmentTakenError,
 	PhoneNumberError,
 } from "../src/errors.js";
+import {parseWorkingTime} from "../src/util/environment";
 
 describe("Parse function", () => {
 	const startDate = { hour: 8, minute: 0 };
@@ -143,10 +144,10 @@ describe("Parse function", () => {
 
 		const SMS = {
 			source: source,
-			smsContent: "Ich möchte einen Termin am 21. 12 um 14:30 Uhr buchen zum Haare schneiden.",
+			smsContent: "Ich möchte einen Termin am 2. July   2021 Das machen wir um 14 Uhr , Update Software von 1.1.0 auf 1.1.1 2a21 234 um 14 Uhr buchen zum Haare schneiden.",
 		};
 		const { date } = parse(SMS, startDate, endDate, currentDate);
-		const otherDate = new Date(2021, 9, 3, 14, 0);
+		const otherDate = new Date(2021, 6, 2, 14, 0);
 		expect(date).toStrictEqual(otherDate);
 	});
 });
@@ -158,17 +159,17 @@ describe("ParseTime function", () => {
 			hour: 8,
 			minute: 30,
 		};
-		const actual = parseTime(time);
+		const actual = parseWorkingTime(time);
 		expect(actual).toStrictEqual(expected);
 	});
 
 	test("should throw an error when given an invalid hour", () => {
 		const time = "26:30";
     expect(() => {
-			parseTime(time);
+			parseWorkingTime(time);
 		}).toThrow(SmsParseError);
 		expect(() => {
-			parseTime(time);
+			parseWorkingTime(time);
 		}).toThrow(
 			"Sorry, die Stunden sind außerhalb des gültigen Bereichs, die Stundenanzahl muss zwischen 0 und 23 Stunden liegen."
 		);
@@ -177,10 +178,10 @@ describe("ParseTime function", () => {
 	test("should throw an error when given an invalid minute", () => {
 		const time = "08:70";
     expect(() => {
-			parseTime(time);
+			parseWorkingTime(time);
 		}).toThrow(SmsParseError);
 		expect(() => {
-			parseTime(time);
+			parseWorkingTime(time);
 		}).toThrow(
 				"Sorry, die Minuten sind außerhalb des gültigen Bereichs, der gültige Bereich der Minuten liegt zwischen 0 und 59."
 		);
