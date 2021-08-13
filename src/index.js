@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
-import { parseTime } from "./parse.js";
 import { handleAllSms } from "./handleAllSms.js";
 import { createHistoryModule, sipgateIO } from "sipgateio";
+import {parseWorkingTime} from "./util/environment";
 
 dotenv.config();
 
@@ -19,8 +19,8 @@ export async function run() {
   let startDate = null;
   let endDate = null;
   try {
-    startDate = parseTime(process.env.START_TIME);
-    endDate = parseTime(process.env.END_TIME);
+    startDate = parseWorkingTime(process.env.START_TIME);
+    endDate = parseWorkingTime(process.env.END_TIME);
   } catch (e) {
     console.warn(e.message);
   }
