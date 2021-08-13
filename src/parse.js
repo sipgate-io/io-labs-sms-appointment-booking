@@ -1,120 +1,83 @@
 import {
 	SmsParseError,
-	AppointmentTakenError,
 	PhoneNumberError,
 } from "./errors.js";
 
 function parseDateString(dateString) {
-	const dayOrMonthRegex = /\d{1,4}/g;
-	const matchResult = dateString.match(dayOrMonthRegex);
-	const day = parseInt(matchResult[0]);
+	const numberRegex = /\d{1,4}/g;
+	const numberResult = dateString.match(numberRegex);
+	const day = parseInt(numberResult[0]);
 
 	let month, year;
 
-	if (matchResult.length === 1) {
-		switch (true) {
-			case /jan(\.|uar)?/i.test(dateString):
-				month = 1;
-				break;
-			case /feb(\.|ruar)?/i.test(dateString):
-				month = 2;
-				break;
-			case /m(a|ä|ae)r(\.|z)?/i.test(dateString):
-				month = 3;
-				break;
-			case /apr(\.|il)?/i.test(dateString):
-				month = 4;
-				break;
-			case /mai\.?/i.test(dateString):
-				month = 5;
-				break;
-			case /jun(\.|i)?/i.test(dateString):
-				month = 6;
-				break;
-			case /jul(\.|y|i)?/i.test(dateString):
-				month = 7;
-				break;
-			case /aug(\.|ust)?/i.test(dateString):
-				month = 8;
-				break;
-			case /sep(\.|t(\.|ember)?)?/i.test(dateString):
-				month = 9;
-				break;
-			case /okt(\.|ober)?/i.test(dateString):
-				month = 10;
-				break;
-			case /nov(\.|ember)?/i.test(dateString):
-				month = 11;
-				break;
-			case /dez(\.|ember)?/i.test(dateString):
-				month = 12;
-				break;
-			default:
+	if (numberResult.length === 2) {
+		year = numberResult[1]
+	}
+	switch (true) {
+		case /jan(\.|uar)?/i.test(dateString):
+			month = 1;
+			break;
+		case /feb(\.|ruar)?/i.test(dateString):
+			month = 2;
+			break;
+		case /m(a|ä|ae)r(\.|z)?/i.test(dateString):
+			month = 3;
+			break;
+		case /apr(\.|il)?/i.test(dateString):
+			month = 4;
+			break;
+		case /mai\.?/i.test(dateString):
+			month = 5;
+			break;
+		case /jun(\.|i)?/i.test(dateString):
+			month = 6;
+			break;
+		case /jul(\.|y|i)?/i.test(dateString):
+			month = 7;
+			break;
+		case /aug(\.|ust)?/i.test(dateString):
+			month = 8;
+			break;
+		case /sep(\.|t(\.|ember)?)?/i.test(dateString):
+			month = 9;
+			break;
+		case /okt(\.|ober)?/i.test(dateString):
+			month = 10;
+			break;
+		case /nov(\.|ember)?/i.test(dateString):
+			month = 11;
+			break;
+		case /dez(\.|ember)?/i.test(dateString):
+			month = 12;
+			break;
+		default:
+			if (numberResult.length === 1) {
 				throw new SmsParseError(
 					"Die Eingabe war fehlerhaft, bitte überprüfe deinen Input."
 				);
-		}
-	} else if (matchResult.length === 2) {
-		year = parseInt(matchResult[1]);
-		switch (true) {
-			case /jan(\.|uar)?/i.test(dateString):
-				month = 1;
-				break;
-			case /feb(\.|ruar)?/i.test(dateString):
-				month = 2;
-				break;
-			case /m(a|ä|ae)r(\.|z)?/i.test(dateString):
-				month = 3;
-				break;
-			case /apr(\.|il)?/i.test(dateString):
-				month = 4;
-				break;
-			case /mai\.?/i.test(dateString):
-				month = 5;
-				break;
-			case /jun(\.|i)?/i.test(dateString):
-				month = 6;
-				break;
-			case /jul(\.|y|i)?/i.test(dateString):
-				month = 7;
-				break;
-			case /aug(\.|ust)?/i.test(dateString):
-				month = 8;
-				break;
-			case /sep(\.|t(\.|ember)?)?/i.test(dateString):
-				month = 9;
-				break;
-			case /okt(\.|ober)?/i.test(dateString):
-				month = 10;
-				break;
-			case /nov(\.|ember)?/i.test(dateString):
-				month = 11;
-				break;
-			case /dez(\.|ember)?/i.test(dateString):
-				month = 12;
-				break;
-			default:
-				month = parseInt(matchResult[1]);
+			} else if (numberResult.length === 2) {
+				month = parseInt(numberResult[1]);
 				year = undefined;
-		}
-	} else {
-		month = parseInt(matchResult[1]);
-		if (matchResult[2].length === 2) {
-			year = parseInt("20" + matchResult[2]);
-		} else if (matchResult[2].length === 4) {
-			year = parseInt(matchResult[2]);
-		} else {
-			throw new SmsParseError(
-				"Die Eingabe war fehlerhaft, bitte überprüfe deinen Input."
-			);
-		}
+			} else if (numberResult.length === 3) {
+				month = parseInt(numberResult[1]);
+				if (numberResult[2].length === 2) {
+					year = parseInt("20" + numberResult[2]);
+				} else if (numberResult[2].length === 4) {
+					year = parseInt(numberResult[2]);
+				} else {
+					throw new SmsParseError(
+						"Die Eingabe war fehlerhaft, bitte überprüfe deinen Input."
+					);
+				}
+			}
 	}
 	if (!month) {
 		throw new SmsParseError(
 			"Die Eingabe war fehlerhaft, bitte überprüfe deinen Input."
 		);
 	}
-	return { year, month, day };
+	console.log(year, month, day)
+	return {year, month, day};
 }
 
 export function parseTimeString(timeString) {

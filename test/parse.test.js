@@ -140,7 +140,7 @@ describe("Parse function", () => {
 	});
 
 	test("should return subject and date when not formatted sms could be parsed", () => {
-	
+
 		const SMS = {
 			source: source,
 			smsContent: "Ich möchte einen Termin am 21. dez um 14:30 Uhr buchen zum Haare schneiden.",
