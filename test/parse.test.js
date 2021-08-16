@@ -19,7 +19,10 @@ describe("Parse function", () => {
 			smsContent: "Termin: 25.02, 14:00, Coding",
 		};
 		expect(() => parse(SMS, startDate, endDate, currentDate)).toThrow(
-			new PhoneNumberError(`Keine gültige E164 Telefonnummer: ${SMS.source}`)
+			`Keine gültige E164 Telefonnummer: ${SMS.source}`
+		);
+		expect(() => parse(SMS, startDate, endDate, currentDate)).toThrow(
+			PhoneNumberError
 		);
 	});
 
@@ -29,7 +32,10 @@ describe("Parse function", () => {
 			smsContent: "Termin: 25.02, 14:00, Coding",
 		};
 		expect(() => parse(SMS, startDate, endDate, currentDate)).toThrow(
-			new PhoneNumberError(`Keine gültige E164 Telefonnummer: ${SMS.source}`)
+			`Keine gültige E164 Telefonnummer: ${SMS.source}`
+		);
+		expect(() => parse(SMS, startDate, endDate, currentDate)).toThrow(
+			PhoneNumberError
 		);
 	});
 
@@ -39,7 +45,10 @@ describe("Parse function", () => {
 			smsContent: "Termin: 25.02, 14:00, Coding",
 		};
 		expect(() => parse(SMS, startDate, endDate, currentDate)).toThrow(
-			new PhoneNumberError(`Keine gültige E164 Telefonnummer: ${SMS.source}`)
+			`Keine gültige E164 Telefonnummer: ${SMS.source}`
+		);
+		expect(() => parse(SMS, startDate, endDate, currentDate)).toThrow(
+			PhoneNumberError
 		);
 	});
 
@@ -49,9 +58,10 @@ describe("Parse function", () => {
 			smsContent: "",
 		};
 		expect(() => parse(SMS, startDate, endDate, currentDate)).toThrow(
-			new SmsParseError(
-				"Die Eingabe war fehlerhaft, bitte überprüfe deinen Input."
-			)
+			"Die Eingabe war fehlerhaft, bitte überprüfe deinen Input."
+		);
+		expect(() => parse(SMS, startDate, endDate, currentDate)).toThrow(
+			SmsParseError
 		);
 	});
 
@@ -74,7 +84,10 @@ describe("Parse function", () => {
 			smsContent: "Termin: 32.02, 15:00, Coding",
 		};
 		expect(() => parse(SMS, startDate, endDate, currentDate)).toThrow(
-			new SmsParseError("Sorry, den Tag gibt es in dem Monat nicht.")
+			"Sorry, den Tag gibt es in dem Monat nicht."
+		);
+		expect(() => parse(SMS, startDate, endDate, currentDate)).toThrow(
+			SmsParseError
 		);
 	});
 
@@ -84,7 +97,10 @@ describe("Parse function", () => {
 			smsContent: "Termin: 01.14, 18:00, Coding",
 		};
 		expect(() => parse(SMS, startDate, endDate, currentDate)).toThrow(
-			new SmsParseError("Sorry, den Monat gibt es nicht.")
+			"Sorry, den Monat gibt es nicht."
+		);
+		expect(() => parse(SMS, startDate, endDate, currentDate)).toThrow(
+			SmsParseError
 		);
 	});
 
@@ -94,7 +110,10 @@ describe("Parse function", () => {
 			smsContent: "Termin: 25.02, 12:15, Coding",
 		};
 		expect(() => parse(SMS, startDate, endDate, currentDate)).toThrow(
-			new SmsParseError("Du kannst nur Termine zur vollen Stunde buchen.")
+			"Du kannst nur Termine zur vollen Stunde buchen."
+		);
+		expect(() => parse(SMS, startDate, endDate, currentDate)).toThrow(
+			SmsParseError
 		);
 	});
 
@@ -104,23 +123,38 @@ describe("Parse function", () => {
 			smsContent: "Termin: 25.02, 18:00, Coding",
 		};
 		expect(() => parse(SMS, startDate, endDate, currentDate)).toThrow(
-			new SmsParseError(
-				`Du kannst nur zwischen ${String(startDate.hour).padStart(
-					2,
-					"0"
-				)}:${String(startDate.minute).padStart(2, "0")} und ${String(
-					endDate.hour
-				).padStart(2, "0")}:${String(endDate.minute).padStart(
-					2,
-					"0"
-				)} einen Termin buchen.`
-			)
+			`Du kannst nur zwischen ${String(startDate.hour).padStart(
+				2,
+				"0"
+			)}:${String(startDate.minute).padStart(2, "0")} und ${String(
+				endDate.hour
+			).padStart(2, "0")}:${String(endDate.minute).padStart(
+				2,
+				"0"
+			)} einen Termin buchen.`
+		);
+		expect(() => parse(SMS, startDate, endDate, currentDate)).toThrow(
+			SmsParseError
 		);
 	});
 
+	test("should throw an error when month is written incorrectly", () => {
+		const SMS = {
+			source: source,
+			smsContent: "Ich möchte einen Termin am 2 Deczember um 14:00 Uhr buchen zum Haare schneiden.",
+		};
+		expect(() => parse(SMS, startDate, endDate, currentDate)).toThrow(
+			"Die Eingabe war fehlerhaft, bitte überprüfe deinen Input."
+		);
+		expect(() => parse(SMS, startDate, endDate, currentDate)).toThrow(
+			SmsParseError
+		);
+	});
+
+
 	test("should return subject and date when everything could be parsed", () => {
 		const SMS = {
-			source: "+491111111111111",
+			source: source,
 			smsContent: "Termin: 25.02, 14:00, 14:00, Coding",
 		};
 		const { subject, date } = parse(SMS, startDate, endDate, currentDate);
@@ -141,7 +175,6 @@ describe("Parse function", () => {
 	});
 
 	test("should return subject and date when unformatted sms could be parsed", () => {
-
 		const SMS = {
 			source: source,
 			smsContent: "Ich möchte einen Termin am 2. July 2021 um 14 Uhr buchen zum Haare schneiden.",
@@ -152,13 +185,32 @@ describe("Parse function", () => {
 	});
 
 	test("should return subject and date when unformatted sms could be parsed", () => {
-
 		const SMS = {
 			source: source,
 			smsContent: "Ich möchte einen Termin am 02.07.2021 14:00 Uhr buchen zum Haare schneiden.",
 		};
 		const { date } = parse(SMS, startDate, endDate, currentDate);
 		const otherDate = new Date(2021, 6, 2, 14, 0);
+		expect(date).toStrictEqual(otherDate);
+	});
+
+	test("should return subject and date when unformatted sms could be parsed when date is in the past", () => {
+		const SMS = {
+			source: source,
+			smsContent: "Ich möchte einen Termin am 02.01.2021 14:00 Uhr buchen zum Haare schneiden.",
+		};
+		const { date } = parse(SMS, startDate, endDate, currentDate);
+		const otherDate = new Date(2022, 0, 2, 14, 0);
+		expect(date).toStrictEqual(otherDate);
+	});
+
+	test("should return subject and date when unformatted sms could be parsed when no year is given", () => {
+		const SMS = {
+			source: source,
+			smsContent: "Ich möchte einen Termin am 2 Mai um 14:00 Uhr buchen zum Haare schneiden.",
+		};
+		const { date } = parse(SMS, startDate, endDate, currentDate);
+		const otherDate = new Date(2021, 4, 2, 14, 0);
 		expect(date).toStrictEqual(otherDate);
 	});
 });
@@ -176,7 +228,7 @@ describe("ParseTime function", () => {
 
 	test("should throw an error when given an invalid hour", () => {
 		const time = "26:30";
-    expect(() => {
+		expect(() => {
 			parseWorkingTime(time);
 		}).toThrow(SmsParseError);
 		expect(() => {
@@ -188,7 +240,7 @@ describe("ParseTime function", () => {
 
 	test("should throw an error when given an invalid minute", () => {
 		const time = "08:70";
-    expect(() => {
+		expect(() => {
 			parseWorkingTime(time);
 		}).toThrow(SmsParseError);
 		expect(() => {
