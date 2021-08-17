@@ -1,7 +1,7 @@
 import * as dotenv from "dotenv";
 import { handleAllSms } from "./handleAllSms.js";
 import { createHistoryModule, sipgateIO } from "sipgateio";
-import {parseWorkingTime} from "./util/environment";
+import { parseWorkingTime } from "./util/environment";
 
 dotenv.config();
 

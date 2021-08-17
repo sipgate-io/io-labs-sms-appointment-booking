@@ -9,18 +9,12 @@ import { sendSms } from "./sendSms.js";
 
 export function handleSms(sms, startDate, endDate, client, currentDate) {
   try {
-    const { subject, date } = parse(
-      sms,
-      startDate,
-      endDate,
-      currentDate
-    );
+    const { subject, date } = parse(sms, startDate, endDate, currentDate);
 
     writeDB(subject, date, sms.source);
-    const message =
-      `Dein Termin am ${date.toLocaleDateString(
-          "de-DE"
-        )} um ${date.toLocaleTimeString("de-DE")} wurde erfolgreich gebucht.`;
+    const message = `Dein Termin am ${date.toLocaleDateString(
+      "de-DE"
+    )} um ${date.toLocaleTimeString("de-DE")} wurde erfolgreich gebucht.`;
     sendSms(message, client, sms.source);
   } catch (e) {
     switch (e.constructor) {
