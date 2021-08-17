@@ -43,11 +43,22 @@ To start the project you can use the following command:
 ## Under the hood
 
 The script in this repository pulls the most recent SMS and tries to create an appointment by parsing the content.
-The SMS text content should be sent in the following format:
+The SMS text content can be send in multiple formats, for example:
 
 ```
 Termin: [Date], [Time], [Subject]
 Termin: 13.12, 15:00, Zahnarzttermin
+```
+or in whole sentences:
+
+```
+Ich möchte einen Termin am 13.12 um 15:00 Uhr zum Haare schneiden.
+
+Ich hätte gerne einen Termin am 2 Dezember um 14 Uhr buchen zum Haare schneiden.
+
+Ich brauche einen Termin am 2ten Dez um 14 Uhr buchen zum Haare schneiden.
+
+Ich brauche am 12.09.2022 einen Termin zum Haare schneiden um 14:00 Uhr.
 ```
 
 If no year is specified or the given date is in the past,
