@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 import { run } from "../src/index.js";
 
 const FIVE_MINUTES_IN_MILLISECONDS = 5 * 60 * 1000;

@@ -1,14 +1,13 @@
 import * as dotenv from "dotenv";
 import { handleAllSms } from "./handleAllSms.js";
 import { createHistoryModule, sipgateIO } from "sipgateio";
-import { parseWorkingTime } from "./util/environment";
+import { parseWorkingTime } from "./util/environment.js";
 
 dotenv.config();
 
 export async function run() {
   const tokenId = process.env.TOKEN_ID;
   const token = process.env.TOKEN;
-
   const client = sipgateIO({ tokenId, token });
   const historyModule = createHistoryModule(client);
   const smsEntries = await historyModule.fetchAll({

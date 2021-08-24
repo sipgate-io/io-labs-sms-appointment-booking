@@ -8,7 +8,7 @@ Among other things, it provides interfaces for sending and receiving text messag
 
 ## In this example
 
-This project implements a basic sms appointment booking service
+This project implements a basic SMS appointment booking service
 using the sipgate.io REST-API.
 
 ## Getting started
@@ -33,17 +33,23 @@ SIPGATE_TOKEN_ID=<tokenId>
 START_HOUR=<time>
 END_HOUR=<time>
 ```
-
+The Personal Access Token needs the following scopes:
+```
+    history:read
+    history:write
+    sessions:sms:write
+```
 ## Quickstart
 To start the project you can use the following command:
 
 `npm start`
 
+This script repeats every 5 minutes.
 
 ## Under the hood
 
 The script in this repository pulls the most recent SMS and tries to create an appointment by parsing the content.
-The SMS text content can be send in multiple formats, for example:
+The SMS text content can be sent in multiple formats, for example:
 
 ```
 Termin: [Date], [Time], [Subject]
@@ -64,14 +70,14 @@ Ich brauche am 12.09.2022 einen Termin zum Haare schneiden um 14:00 Uhr.
 If no year is specified or the given date is in the past,
 we assume that the appointment should be booked in the upcoming date in the future
 
-- 14.02 booked in july 2021 is 14.02.2022
-- 14.02.1980 booked in july 2021 is 14.02.2022
-- 28.10 booked in july 2021 is 28.10.2021
-- 28.10.1980 booked in july 2021 is 28.10.2021
+- 14.02 booked in July 2021 is 14.02.2022
+- 14.02.1980 booked in July 2021 is 14.02.2022
+- 28.10 booked in July 2021 is 28.10.2021
+- 28.10.1980 booked in July 2021 is 28.10.2021
 
 Otherwise, we try to parse the given year in the future.
 
-In every case you will receive an answer sms, which can contain the following messages:
+In every case you will receive an answer SMS, which can contain the following messages:
 
 - Appointment is booked successfully
 - Appointment is taken

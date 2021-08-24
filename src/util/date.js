@@ -1,4 +1,4 @@
-import {SmsParseError} from "../errors";
+import {SmsParseError} from "../errors.js";
 
 const months = {
     1: /jan(\.|uar)?/i,

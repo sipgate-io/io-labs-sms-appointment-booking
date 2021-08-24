@@ -8,7 +8,10 @@ export function parse(sms, startDate, endDate, currentDate) {
     );
   }
 
-  if (!sms.smsContent.includes("Termin")) {
+  if (
+    !sms.smsContent.includes("Termin") &&
+    !sms.smsContent.includes("termin")
+  ) {
     throw new SmsParseError(
       "Die Eingabe war fehlerhaft, bitte überprüfe deinen Input."
     );

@@ -1,4 +1,4 @@
-import {SmsParseError} from "../errors";
+import {SmsParseError} from "../errors.js";
 
 export function parseWorkingTime(timeString) {
     const hour = parseInt(timeString.split(":")[0]);
