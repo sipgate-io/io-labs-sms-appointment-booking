@@ -30,8 +30,8 @@ See [Personal Access Token documentation](https://www.sipgate.io/rest-api/authen
 ```bash
 SIPGATE_TOKEN=<token>
 SIPGATE_TOKEN_ID=<tokenId>
-START_HOUR=<time>
-END_HOUR=<time>
+START_TIME=<time>
+END_TIME=<time>
 ```
 The Personal Access Token needs the following scopes:
 ```
@@ -88,8 +88,8 @@ In every case you will receive an answer SMS, which can contain the following me
 The working hours are defined in the `.env` file, e.g:
 
 ```
-START_HOUR=9:00
-END_HOUR=16:00
+START_TIME=9:00
+END_TIME=16:00
 ```
 
 All appointments are saved to a local `db.json` file.
