@@ -7,17 +7,15 @@ permissions:
   issues: write
   repository-projects: write
 
-
 jobs:
-  run-tests:
-    name: tests
+  tests:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v2
       - uses: actions/setup-node@v1
         with:
-          node-version: '12'
-      - run:
+          node-version: "12"
+      - run: |
           npm install
           npm run test
 
@@ -32,10 +30,6 @@ jobs:
         uses: dependabot/fetch-metadata@v1.1.1
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
-          # The following properties are now available:
-          #  - steps.metadata.outputs.dependency-names
-          #  - steps.metadata.outputs.dependency-type
-          #  - steps.metadata.outputs.update-type
       - name: Enable auto-merge for Dependabot PRs
         # if: ${{contains(steps.metadata.outputs.dependency-names, 'my-dependency') && steps.metadata.outputs.update-type == 'version-update:semver-patch'}}
         run: gh pr merge --auto --merge "$PR_URL"
@@ -46,22 +40,7 @@ jobs:
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{secrets.SLACK_WEBHOOK}}
-          SLACK_MESSAGE: "Merge was successful"
-          SLACK_USERNAME: "mach halt"
-          SLACK_ICON: "https://staticc.sportskeeda.com/editor/2021/04/f7504-16196838481260-800.jpg"
-          MSG_MINIMAL: commit
-
-  slackNotification:
-    name: Slack fail notification
-    runs-on: ubuntu-latest
-    if: ${{ failure() && jobs.tests.conclusion == 'failure' && github.actor == 'dependabot[bot]'}}
-    steps:
-      - uses: actions/checkout@v2
-      - name: Slack Notification
-        uses: rtCamp/action-slack-notify@v2
-        env:
-          SLACK_WEBHOOK: ${{secrets.SLACK_WEBHOOK}}
-          SLACK_MESSAGE: "Merge failed because of failing tests"
-          SLACK_USERNAME: "mach halt"
+          SLACK_MESSAGE: "${{ steps.metadata.outputs.dependency-names }} were updated successfully."
+          SLACK_USERNAME: "sipgate.io"
           SLACK_ICON: "https://staticc.sportskeeda.com/editor/2021/04/f7504-16196838481260-800.jpg"
           MSG_MINIMAL: commit
