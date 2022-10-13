@@ -24,6 +24,7 @@ jobs:
   dependabot:
     name: fetch pr meta info
     runs-on: ubuntu-latest
+    needs: tests
     if: ${{ github.actor == 'dependabot[bot]' }}
     steps:
       - name: Dependabot metadata
@@ -36,19 +37,31 @@ jobs:
           #  - steps.metadata.outputs.dependency-type
           #  - steps.metadata.outputs.update-type
       - name: Enable auto-merge for Dependabot PRs
-        if: ${{contains(steps.metadata.outputs.dependency-names, 'my-dependency') && steps.metadata.outputs.update-type == 'version-update:semver-patch'}}
+        # if: ${{contains(steps.metadata.outputs.dependency-names, 'my-dependency') && steps.metadata.outputs.update-type == 'version-update:semver-patch'}}
         run: gh pr merge --auto --merge "$PR_URL"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
+      - name: slack success notification
+        uses: rtCamp/action-slack-notify@v2
+        env:
+          SLACK_WEBHOOK: ${{secrets.SLACK_WEBHOOK}}
+          SLACK_MESSAGE: "Merge was successful"
+          SLACK_USERNAME: "mach halt"
+          SLACK_ICON: "https://staticc.sportskeeda.com/editor/2021/04/f7504-16196838481260-800.jpg"
+          MSG_MINIMAL: commit
 
   slackNotification:
-    name: Slack Notification
+    name: Slack fail notification
     runs-on: ubuntu-latest
+    if: ${{ failure() && jobs.tests.conclusion == 'failure' && github.actor == 'dependabot[bot]'}}
     steps:
       - uses: actions/checkout@v2
       - name: Slack Notification
         uses: rtCamp/action-slack-notify@v2
         env:
-          SLACK_WEBHOOK: ${{ secrets.SLACK_WEBHOOK }}
-          SLACK_MESSAGE: "Hello from the other side"
+          SLACK_WEBHOOK: ${{secrets.SLACK_WEBHOOK}}
+          SLACK_MESSAGE: "Merge failed because of failing tests"
+          SLACK_USERNAME: "mach halt"
+          SLACK_ICON: "https://staticc.sportskeeda.com/editor/2021/04/f7504-16196838481260-800.jpg"
+          MSG_MINIMAL: commit
