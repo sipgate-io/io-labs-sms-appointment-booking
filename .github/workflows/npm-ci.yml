@@ -15,12 +15,15 @@ jobs:
       - uses: actions/setup-node@v1
         with:
           node-version: "12"
-      - run: |
+      - name: tests
+        id: test_output
+        run: |
           npm install
           npm run test
+          echo "status=${{ job.status }}" >> $GITHUB_OUTPUT
 
-  dependabot:
-    name: fetch pr meta info
+  test_success:
+    name: tests successful
     permissions: write-all
     runs-on: ubuntu-latest
     needs: tests
@@ -33,7 +36,9 @@ jobs:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
       - name: Enable auto-merge for Dependabot PRs
         # if: ${{contains(steps.metadata.outputs.dependency-names, 'my-dependency') && steps.metadata.outputs.update-type == 'version-update:semver-patch'}}
-        run: gh pr merge --auto --merge "$PR_URL"
+        run: |
+          gh pr merge --auto --merge "$PR_URL"
+          echo "status=${{needs.tests.steps.test_output.status}}"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
@@ -41,7 +46,7 @@ jobs:
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{secrets.SLACK_WEBHOOK}}
-          SLACK_MESSAGE: "Dependencies were updated successfully."
-          SLACK_USERNAME: "sipgate.io"
-          SLACK_ICON: "https://staticc.sportskeeda.com/editor/2021/04/f7504-16196838481260-800.jpg"
+          SLACK_MESSAGE: "${{GITHUB_REPOSITORY}} was updated successfully."
+          SLACK_USERNAME: "Dependabot"
+          SLACK_ICON: "https://avatars.githubusercontent.com/u/27347476?s=200&v=4"
           MSG_MINIMAL: commit
