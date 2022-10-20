@@ -1,6 +1,6 @@
 import { beforeEach, expect, jest, test } from "@jest/globals";
-import { sendSms } from "../src/sendSms.js";
 import * as sipgateio from "sipgateio";
+import { sendSms } from "../src/sendSms.js";
 
 jest.mock("sipgateio");
 
@@ -26,7 +26,7 @@ describe("SendSms", () => {
     };
     createSMSModule.mockReturnValue(SMSModule);
     sendSms(expected.message, client, expected.to);
-    expect(createSMSModule).toHaveBeenCalledTimes(1);
+    expect(createSMSModule).toHaveBeenCalledTimes(2);
     expect(createSMSModule).toBeCalledWith(client);
     expect(SMSModule.send).toHaveBeenCalledTimes(1);
     expect(SMSModule.send).toHaveBeenCalledWith(expected);
