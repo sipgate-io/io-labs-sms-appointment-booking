@@ -46,7 +46,7 @@ jobs:
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{secrets.SLACK_WEBHOOK}}
-          SLACK_MESSAGE: "${{GITHUB_REPOSITORY}} was updated successfully."
+          SLACK_MESSAGE: "${{github.event.repository.name}} was updated successfully."
           SLACK_USERNAME: "Dependabot"
           SLACK_ICON: "https://avatars.githubusercontent.com/u/27347476?s=200&v=4"
           MSG_MINIMAL: commit
