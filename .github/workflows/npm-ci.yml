@@ -41,7 +41,7 @@ jobs:
         uses: rtCamp/action-slack-notify@v2
         env:
           SLACK_WEBHOOK: ${{secrets.SLACK_WEBHOOK}}
-          SLACK_MESSAGE: "${{ steps.metadata.outputs.dependency-names }} were updated successfully."
+          SLACK_MESSAGE: "Dependencies were updated successfully."
           SLACK_USERNAME: "sipgate.io"
           SLACK_ICON: "https://staticc.sportskeeda.com/editor/2021/04/f7504-16196838481260-800.jpg"
           MSG_MINIMAL: commit
