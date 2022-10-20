@@ -23,19 +23,19 @@ jobs:
           npm install
           npm run test
       - name: Get github token
-        if: ${{ github.actor == 'dependabot[bot]' && job.status == "success" }}
+        if: ${{ github.actor == 'dependabot[bot]' && job.status == 'success' }}
         uses: dependabot/fetch-metadata@v1.1.1
         with:
           github-token: "${{ secrets.GITHUB_TOKEN }}"
       - name: Merge dependabot PR
-        if: ${{ github.actor == 'dependabot[bot]' && job.status == "success" }}
+        if: ${{ github.actor == 'dependabot[bot]' && job.status == 'success' }}
         run: gh pr merge --auto --merge "$PR_URL"
         env:
           PR_URL: ${{github.event.pull_request.html_url}}
           GITHUB_TOKEN: ${{secrets.GITHUB_TOKEN}}
       - name: Notify slack on success
         uses: rtCamp/action-slack-notify@v2
-        if: ${{ github.actor == 'dependabot[bot]' && job.status == "success" }}
+        if: ${{ github.actor == 'dependabot[bot]' && job.status == 'success' }}
         env:
           SLACK_WEBHOOK: ${{secrets.SLACK_WEBHOOK}}
           SLACK_MESSAGE: "${{github.event.repository.name}} was updated successfully."
@@ -43,12 +43,12 @@ jobs:
           SLACK_ICON: "https://avatars.githubusercontent.com/u/27347476?s=200&v=4"
           MSG_MINIMAL: commit
       - name: Notify slack on failure
-          uses: rtCamp/action-slack-notify@v2
-          if: ${{ github.actor == 'dependabot[bot]' && job.status == "failure" }}
-          env:
-            SLACK_WEBHOOK: ${{secrets.SLACK_WEBHOOK}}
-            SLACK_MESSAGE: "${{github.event.repository.name}} was not updated due to failing tests."
-            SLACK_COLOR: "#FF0000"
-            SLACK_USERNAME: "Dependabot"
-            SLACK_ICON: "https://avatars.githubusercontent.com/u/27347476?s=200&v=4"
-            MSG_MINIMAL: commit
+        uses: rtCamp/action-slack-notify@v2
+        if: ${{ github.actor == 'dependabot[bot]' && job.status == 'failure' }}
+        env:
+          SLACK_WEBHOOK: ${{secrets.SLACK_WEBHOOK}}
+          SLACK_MESSAGE: "${{github.event.repository.name}} was not updated due to failing tests."
+          SLACK_COLOR: "#FF0000"
+          SLACK_USERNAME: "Dependabot"
+          SLACK_ICON: "https://avatars.githubusercontent.com/u/27347476?s=200&v=4"
+          MSG_MINIMAL: commit
