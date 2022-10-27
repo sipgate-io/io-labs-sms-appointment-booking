@@ -1,4 +1,4 @@
-name: Install, test and notify
+name: Run tests on pull request and auto merge dependabot pull requests
 
 on: pull_request
 
@@ -12,14 +12,14 @@ jobs:
     runs-on: ubuntu-latest
     permissions: write-all
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v1
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
           node-version: "12"
+      - name: Install dependencies
+        run: npm ci
       - name: Run tests
-        run: |
-          npm install
-          npm run test
+        run: npm run tests
       - name: Get github token
         if: ${{ success() && github.actor == 'dependabot[bot]' }}
         uses: dependabot/fetch-metadata@v1.1.1
@@ -36,7 +36,7 @@ jobs:
         if: ${{ success() && github.actor == 'dependabot[bot]' }}
         env:
           SLACK_WEBHOOK: ${{secrets.SLACK_WEBHOOK}}
-          SLACK_MESSAGE: "${{github.event.repository.name}} was updated successfully."
+          SLACK_MESSAGE: "${{github.event.repository.name}} was updated successfully as tests succeeded."
           SLACK_USERNAME: "Dependabot"
           SLACK_ICON: "https://avatars.githubusercontent.com/u/27347476?s=200&v=4"
           MSG_MINIMAL: commit
